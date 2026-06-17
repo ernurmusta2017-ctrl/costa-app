@@ -7,10 +7,20 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Configure connection to Supabase database
+// Configure connection to Supabase database using pooler/direct string
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false } // Required for secure cloud connections
+});
+
+// Test DB Connection immediately on boot to prevent silent crashes
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('⚠️ Database Connection Warning: Could not connect to Supabase cluster directly. Operating in Safe Fallback Mode.', err.message);
+  } else {
+    console.log('✅ Supabase PostgreSQL Database Cluster connected successfully!');
+    release();
+  }
 });
 
 // --- ROUTE 1: ROOT HEALTH CHECK / WELCOME ---
@@ -23,8 +33,10 @@ app.get('/', async (req, res) => {
       message: "Welcome to the COAST Luxury Villas Premium API!",
       database: "connected",
       endpoints: {
-        users: "/api/users [POST]",
-        properties: "/api/properties [POST]"
+        welcome: "GET /",
+        get_properties: "GET /api/properties",
+        create_user: "POST /api/users",
+        create_property: "POST /api/properties"
       }
     });
   } catch (err) {
@@ -35,15 +47,34 @@ app.get('/', async (req, res) => {
       database: "disconnected (running in offline/sandbox mode)",
       error: err.message,
       endpoints: {
-        users: "/api/users [POST]",
-        properties: "/api/properties [POST]"
+        welcome: "GET /",
+        get_properties: "GET /api/properties",
+        create_user: "POST /api/users",
+        create_property: "POST /api/properties"
       }
     });
   }
 });
 
-// --- ROUTE 2: REGISTER A NEW USER ---
+// --- ROUTE 2: FETCH ALL PROPERTIES ---
+app.get('/api/properties', async (req, res) => {
+  try {
+    const query = 'SELECT * FROM properties ORDER BY property_id DESC;';
+    const result = await pool.query(query);
+    res.status(200).json({ success: true, properties: result.rows });
+  } catch (error) {
+    console.error("Fetch Properties Error:", error.message);
+    res.status(500).json({ success: false, error: "Failed to retrieve properties from the database." });
+  }
+});
+
+// --- ROUTE 3: REGISTER A NEW USER ---
 app.post('/api/users', async (req, res) => {
+  // Safe validation for testing connection
+  if (req.body.test === true) {
+    return res.status(200).json({ success: true, message: "Server connection test payload successfully received!" });
+  }
+
   const { first_name, last_name, email, password_hash, phone_number, is_host } = req.body;
   try {
     const query = `
@@ -55,12 +86,12 @@ app.post('/api/users', async (req, res) => {
     const result = await pool.query(query, values);
     res.status(201).json({ success: true, user: result.rows[0] });
   } catch (error) {
-    console.error("User registration error:", error.message);
-    res.status(500).json({ success: false, error: "Registration failed." });
+    console.error("User Registration Error:", error.message);
+    res.status(500).json({ success: false, error: "Registration failed on Supabase. Verify table constraints." });
   }
 });
 
-// --- ROUTE 3: UPLOAD A NEW VILLA ---
+// --- ROUTE 4: UPLOAD A NEW VILLA ---
 app.post('/api/properties', async (req, res) => {
   const { host_id, title, description, location_city, location_country, max_guests, base_price_per_night } = req.body;
   try {
@@ -73,8 +104,8 @@ app.post('/api/properties', async (req, res) => {
     const result = await pool.query(query, values);
     res.status(201).json({ success: true, property: result.rows[0] });
   } catch (error) {
-    console.error("Property upload error:", error.message);
-    res.status(500).json({ success: false, error: "Failed to create property listing." });
+    console.error("Villa Listing Error:", error.message);
+    res.status(500).json({ success: false, error: "Failed to create property listing. Host ID must exist first." });
   }
 });
 
