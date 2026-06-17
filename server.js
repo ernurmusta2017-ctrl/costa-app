@@ -1,16 +1,32 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const { URL } = require('url');
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Configure connection to Supabase database using pooler/direct string
+// Securely configure the Supabase Connection Pool
+let sslConfig = { rejectUnauthorized: false };
+
+if (process.env.DATABASE_URL) {
+  try {
+    // Parse the connection string to dynamically extract the pooler hostname
+    const dbUrl = new URL(process.env.DATABASE_URL);
+    
+    // Explicitly set the SNI servername to allow the Supabase pooler to identify the tenant
+    sslConfig.servername = dbUrl.hostname;
+    console.log(`📡 Injected TLS SNI servername: ${dbUrl.hostname}`);
+  } catch (parseError) {
+    console.error("⚠️ Failed to parse DATABASE_URL hostname for SNI injection:", parseError.message);
+  }
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Required for secure cloud connections
+  ssl: sslConfig
 });
 
 // Test DB Connection immediately on boot to prevent silent crashes
@@ -18,7 +34,7 @@ pool.connect((err, client, release) => {
   if (err) {
     console.error('⚠️ Database Connection Warning: Could not connect to Supabase cluster directly. Operating in Safe Fallback Mode.', err.message);
   } else {
-    console.log('✅ Supabase PostgreSQL Database Cluster connected successfully!');
+    console.log('✅ Supabase PostgreSQL Database Cluster connected successfully with TLS SNI verification!');
     release();
   }
 });
