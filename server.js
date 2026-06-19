@@ -8,19 +8,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Securely configure the Supabase Connection Pool
+// Configure Supabase Connection Pool with TLS SNI verification
 let sslConfig = { rejectUnauthorized: false };
 
 if (process.env.DATABASE_URL) {
   try {
-    // Parse the connection string to dynamically extract the pooler hostname
     const dbUrl = new URL(process.env.DATABASE_URL);
-    
-    // Explicitly set the SNI servername to allow the Supabase pooler to identify the tenant
     sslConfig.servername = dbUrl.hostname;
     console.log(`📡 Injected TLS SNI servername: ${dbUrl.hostname}`);
   } catch (parseError) {
-    console.error("⚠️ Failed to parse DATABASE_URL hostname for SNI injection:", parseError.message);
+    console.error("⚠️ Failed to parse DATABASE_URL hostname for SNI:", parseError.message);
   }
 }
 
@@ -29,66 +26,32 @@ const pool = new Pool({
   ssl: sslConfig
 });
 
-// Test DB Connection immediately on boot to prevent silent crashes
+// Test connection on startup
 pool.connect((err, client, release) => {
   if (err) {
-    console.error('⚠️ Database Connection Warning: Could not connect to Supabase cluster directly. Operating in Safe Fallback Mode.', err.message);
+    console.error('⚠️ Database Connection Warning:', err.message);
   } else {
-    console.log('✅ Supabase PostgreSQL Database Cluster connected successfully with TLS SNI verification!');
+    console.log('✅ Supabase PostgreSQL Connected!');
     release();
   }
 });
 
-// --- ROUTE 1: ROOT HEALTH CHECK / WELCOME ---
-app.get('/', async (req, res) => {
+// --- 1. GET ALL USERS ---
+app.get('/api/users', async (req, res) => {
   try {
-    // Run a quick query to test database connection status
-    await pool.query('SELECT NOW()');
-    res.json({
-      status: "online",
-      message: "Welcome to the COAST Luxury Villas Premium API!",
-      database: "connected",
-      endpoints: {
-        welcome: "GET /",
-        get_properties: "GET /api/properties",
-        create_user: "POST /api/users",
-        create_property: "POST /api/properties"
-      }
-    });
-  } catch (err) {
-    console.error("Database connection check failed:", err.message);
-    res.json({
-      status: "online",
-      message: "Welcome to the COAST Luxury Villas Premium API!",
-      database: "disconnected (running in offline/sandbox mode)",
-      error: err.message,
-      endpoints: {
-        welcome: "GET /",
-        get_properties: "GET /api/properties",
-        create_user: "POST /api/users",
-        create_property: "POST /api/properties"
-      }
-    });
-  }
-});
-
-// --- ROUTE 2: FETCH ALL PROPERTIES ---
-app.get('/api/properties', async (req, res) => {
-  try {
-    const query = 'SELECT * FROM properties ORDER BY property_id DESC;';
+    const query = 'SELECT user_id, first_name, last_name, email, phone_number, is_host FROM users ORDER BY user_id DESC;';
     const result = await pool.query(query);
-    res.status(200).json({ success: true, properties: result.rows });
+    res.status(200).json({ success: true, users: result.rows });
   } catch (error) {
-    console.error("Fetch Properties Error:", error.message);
-    res.status(500).json({ success: false, error: "Failed to retrieve properties from the database." });
+    console.error("Fetch Users Error:", error.message);
+    res.status(500).json({ success: false, error: "Failed to retrieve users." });
   }
 });
 
-// --- ROUTE 3: REGISTER A NEW USER ---
+// --- 2. REGISTER A NEW USER ---
 app.post('/api/users', async (req, res) => {
-  // Safe validation for testing connection
   if (req.body.test === true) {
-    return res.status(200).json({ success: true, message: "Server connection test payload successfully received!" });
+    return res.status(200).json({ success: true, message: "Handshake payload received!" });
   }
 
   const { first_name, last_name, email, password_hash, phone_number, is_host } = req.body;
@@ -103,29 +66,50 @@ app.post('/api/users', async (req, res) => {
     res.status(201).json({ success: true, user: result.rows[0] });
   } catch (error) {
     console.error("User Registration Error:", error.message);
-    res.status(500).json({ success: false, error: "Registration failed on Supabase. Verify table constraints." });
+    res.status(500).json({ success: false, error: "Registration failed." });
   }
 });
 
-// --- ROUTE 4: UPLOAD A NEW VILLA ---
+// --- 3. GET ALL VILLAS ---
+app.get('/api/properties', async (req, res) => {
+  try {
+    const query = 'SELECT * FROM properties ORDER BY property_id DESC;';
+    const result = await pool.query(query);
+    res.status(200).json({ success: true, properties: result.rows });
+  } catch (error) {
+    console.error("Fetch Properties Error:", error.message);
+    res.status(500).json({ success: false, error: "Failed to retrieve properties." });
+  }
+});
+
+// --- 4. UPLOAD A NEW VILLA ---
 app.post('/api/properties', async (req, res) => {
-  const { host_id, title, description, location_city, location_country, max_guests, base_price_per_night } = req.body;
+  const { host_id, title, description, location_city, location_country, max_guests, base_price_per_night, img } = req.body;
   try {
     const query = `
-      INSERT INTO properties (host_id, title, description, location_city, location_country, max_guests, base_price_per_night)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO properties (host_id, title, description, location_city, location_country, max_guests, base_price_per_night, img)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *;
     `;
-    const values = [host_id, title, description, location_city, location_country, max_guests, base_price_per_night];
+    const values = [host_id, title, description, location_city, location_country, max_guests, base_price_per_night, img];
     const result = await pool.query(query, values);
     res.status(201).json({ success: true, property: result.rows[0] });
   } catch (error) {
     console.error("Villa Listing Error:", error.message);
-    res.status(500).json({ success: false, error: "Failed to create property listing. Host ID must exist first." });
+    res.status(500).json({ success: false, error: "Failed to create property listing." });
   }
 });
 
-// Start listening
+// --- 5. HEALTH CHECK ROOT ---
+app.get('/', async (req, res) => {
+  try {
+    await pool.query('SELECT NOW()');
+    res.json({ status: "online", database: "connected" });
+  } catch (err) {
+    res.json({ status: "online", database: "disconnected", error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
