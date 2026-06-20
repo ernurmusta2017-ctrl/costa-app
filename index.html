@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COAST Luxury Villas - Premium Vacation Rentals</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            coast: {
+              navy: 'var(--aqua-deep)',      // Maps deep aqua dynamically
+              sand: 'var(--sand-light)',    // Maps soft sand dynamically
+              softWhite: 'var(--white)',    // Maps clean white dynamically
+              grey: 'var(--text-grey)',      // Maps custom grey dynamically
+              gold: '#D4AF37',              // Luxury accent gold
+              darkGold: '#AA820A'
+            }
+          },
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          },
+          animation: {
+            'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+            'pulse-soft': 'pulseSoft 3s infinite',
+          },
+          keyframes: {
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulseSoft: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0.6' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght=100;300;400;500;600;700&family=Playfair+Display:ital,wght=0,400..900;1,400..900&display=swap');
+    
+    :root {
+      --aqua-deep: #0e4d4d;
+      --sand-light: #f4f1ea;
+      --white: #ffffff;
+      --text-grey: #555555;
+      --overlay: rgba(14, 77, 77, 0.85);
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      scroll-behavior: smooth;
+    }
+    h1, h2, h3, h4, .serif-font {
+      font-family: 'Playfair Display', serif;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--sand-light);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--aqua-deep);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-coast-sand text-coast-navy overflow-x-hidden">
+
+  <!-- TOP PREMIUM HUD BAR -->
+  <div class="bg-coast-navy text-white text-xs py-2.5 px-4 md:px-8 flex justify-between items-center border-b border-white/10 relative z-50 shadow-md">
+    <div class="flex items-center space-x-4">
+      <a href="tel:+355694099488" class="flex items-center hover:text-coast-gold transition-colors">
+        <i class="fa-solid fa-phone text-coast-gold mr-1.5 text-[11px]"></i> +355 69 409 9488
+      </a>
+      <span class="hidden md:inline text-white/20">|</span>
+      <span class="hidden md:inline flex items-center">
+        <i class="fa-solid fa-location-dot text-coast-gold mr-1.5 text-[11px]"></i> Green Coast, Palasë
+      </span>
+    </div>
+    <div class="flex items-center space-x-4">
+      <span class="hidden sm:inline-block text-[10px] uppercase tracking-[0.15em] text-coast-gold/80 font-bold">Private Rental Club</span>
+      <button onclick="togglePortal()" class="bg-coast-gold hover:bg-coast-darkGold text-coast-navy font-bold px-3.5 py-1.5 rounded-lg text-[11px] tracking-wide transition-all duration-300 flex items-center space-x-1.5 shadow-md hover:scale-105">
+        <i class="fa-solid fa-database animate-pulse"></i>
+        <span>DB Control Center</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav class="bg-coast-softWhite/90 backdrop-blur-md sticky top-0 z-40 border-b border-coast-navy/10 py-4.5 px-4 md:px-8 flex justify-between items-center shadow-sm">
+    <div class="flex items-center space-x-3">
+      <a href="#" class="brand flex flex-col">
+        <div class="text-xl md:text-2xl text-coast-navy font-light tracking-[4px] uppercase leading-tight">
+          Coast Villas
+        </div>
+        <span class="text-[8px] uppercase tracking-[2px] text-coast-navy/75 font-semibold leading-none">Curated Collection</span>
+      </a>
+    </div>
+    
+    <div class="hidden lg:flex space-x-8 text-xs uppercase tracking-widest font-bold text-coast-navy">
+      <a href="#villas" class="hover:text-coast-gold transition-colors">Villas Portfolio</a>
+      <a href="#services" class="hover:text-coast-gold transition-colors">Premium Services</a>
+      <a href="#register" class="hover:text-coast-gold transition-colors">Client Registry</a>
+      <a href="#host" class="hover:text-coast-gold transition-colors">Host Console</a>
+      <a href="#faq" class="hover:text-coast-gold transition-colors">FAQ</a>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <span id="connectionHUD" class="flex items-center text-xs text-amber-700 font-bold bg-amber-100/50 px-4 py-2 rounded-full border border-amber-200 shadow-sm transition-all duration-500">
+        <span class="h-2 w-2 rounded-full bg-amber-600 mr-2.5 animate-pulse"></span>
+        🔄 Connecting to Cloud...
+      </span>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="relative bg-coast-navy text-white py-28 md:py-40 px-4 md:px-8 text-center overflow-hidden min-h-[90vh] flex items-center justify-center">
+    <div class="absolute inset-0 bg-[url('https://images.hellomagazine.com/horizon/landscape/2990818e72d8-green-coastalbaniamgallery-collection3.jpg')] bg-cover bg-center opacity-40 transform scale-105"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-coast-navy via-coast-navy/80 to-transparent"></div>
+    
+    <div class="relative z-10 max-w-5xl mx-auto animate-fade-in-up">
+      <span class="text-coast-gold uppercase tracking-[0.4em] text-xs font-bold block mb-4">Elite Green Coast Resort • Palasë</span>
+      <h1 class="text-4xl md:text-7xl lg:text-8xl font-medium mb-6 leading-tight tracking-wide">Luxury Villa Rentals <br><span class="italic font-normal text-coast-gold">at Green Coast</span></h1>
+      <p class="text-white/90 text-base md:text-xl max-w-3xl mx-auto mb-12 font-light leading-relaxed">
+        Access the most prestigious residences in Palasa, fully managed for an effortless Mediterranean escape. Directly linked to your Supabase PostgreSQL cloud database.
+      </p>
+      
+      <!-- HERO INTERACTIVE FILTER / SEARCH BAR -->
+      <div class="bg-coast-softWhite p-4 md:p-6 rounded-2xl shadow-2xl max-w-4xl mx-auto border border-white/20 text-coast-navy grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 text-left">
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-coast-grey font-bold mb-1.5"><i class="fa-solid fa-location-dot text-coast-gold mr-1"></i> Typology</label>
+          <select id="searchLocation" onchange="applyFilters()" class="w-full bg-coast-sand/50 border border-coast-navy/10 rounded-xl px-3 py-2.5 text-xs font-semibold focus:ring-1 focus:ring-coast-gold outline-none text-coast-navy">
+            <option value="all">All Typologies</option>
+            <option value="apartments">Apartments</option>
+            <option value="hotel">Hotel Rooms</option>
+            <option value="twin small">Twin Small Villas</option>
+            <option value="twin big">Twin Big Villas</option>
+            <option value="pool">Pool Villas</option>
+            <option value="premium">Premium Villas</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-coast-grey font-bold mb-1.5"><i class="fa-solid fa-users text-coast-gold mr-1"></i> Max Guests</label>
+          <select id="searchGuests" onchange="applyFilters()" class="w-full bg-coast-sand/50 border border-coast-navy/10 rounded-xl px-3 py-2.5 text-xs font-semibold focus:ring-1 focus:ring-coast-gold outline-none text-coast-navy">
+            <option value="all">Any Guests</option>
+            <option value="2">2+ Guests</option>
+            <option value="4">4+ Guests</option>
+            <option value="6">6+ Guests</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-coast-grey font-bold mb-1.5"><i class="fa-solid fa-dollar-sign text-coast-gold mr-1"></i> Max Price (Per Night)</label>
+          <select id="searchPrice" onchange="applyFilters()" class="w-full bg-coast-sand/50 border border-coast-navy/10 rounded-xl px-3 py-2.5 text-xs font-semibold focus:ring-1 focus:ring-coast-gold outline-none text-coast-navy">
+            <option value="all">No Max Limit</option>
+            <option value="500">Under $500</option>
+            <option value="1500">Under $1,500</option>
+            <option value="2500">Under $2,500</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button onclick="resetFilters()" class="w-full bg-coast-navy hover:bg-black text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-filter-circle-xmark"></i>
+            <span>Reset Search</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-5">
+        <a href="#villas" class="w-full sm:w-auto bg-coast-gold hover:bg-coast-darkGold text-coast-navy font-bold px-10 py-4.5 rounded-xl transition-all shadow-lg text-xs tracking-widest uppercase hover:scale-105 duration-300">View Properties</a>
+        <button onclick="togglePortal()" class="w-full sm:w-auto border border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold px-10 py-4.5 rounded-xl transition-all text-xs tracking-widest uppercase hover:scale-105 duration-300 backdrop-blur-sm">Link Custom Database</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- TRUST BAR -->
+  <div class="bg-coast-navy text-white py-6 flex justify-center gap-8 flex-wrap border-t border-white/5 text-center">
+    <div class="text-[10px] tracking-[2px] uppercase flex items-center gap-2"><span class="text-coast-gold">●</span> 40+ Managed Properties</div>
+    <div class="text-[10px] tracking-[2px] uppercase flex items-center gap-2"><span class="text-coast-gold">●</span> 1000+ Happy Guests</div>
+    <div class="text-[10px] tracking-[2px] uppercase flex items-center gap-2"><span class="text-coast-gold">●</span> Established 2021</div>
+    <div class="text-[10px] tracking-[2px] uppercase flex items-center gap-2"><span class="text-coast-gold">●</span> Premier Palasa Partner</div>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 md:px-8 py-20">
+    
+    <!-- DATABASE SYNCED VILLA PORTFOLIO -->
+    <section id="villas" class="mb-28 scroll-mt-24">
+      <div class="flex flex-col md:flex-row justify-between items-baseline mb-12 border-b border-coast-navy/10 pb-6">
+        <div>
+          <h2 class="text-4xl md:text-5xl font-medium text-coast-navy">Featured Typologies</h2>
+          <p class="text-coast-grey text-sm mt-2 font-medium">Live collection connected directly to Supabase cloud table operations</p>
+        </div>
+        <div class="flex space-x-3 mt-4 md:mt-0">
+          <button onclick="fetchProperties()" class="bg-coast-softWhite hover:bg-coast-sand text-coast-navy font-bold px-5 py-3 rounded-xl text-xs flex items-center space-x-2 border border-coast-navy/10 transition-all shadow-sm">
+            <i class="fa-solid fa-arrows-rotate"></i>
+            <span>Reload Database</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live properties grid -->
+      <div id="propertiesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <!-- Dynmically loaded properties populated from JS -->
+      </div>
+    </section>
+
+    <!-- PREMIUM CONCIERGE SERVICES SECTION -->
+    <section id="services" class="mb-28 bg-coast-navy text-white rounded-[2.5rem] p-10 md:p-16 relative overflow-hidden shadow-2xl">
+      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1500')] bg-cover bg-center opacity-10"></div>
+      
+      <div class="relative z-10 max-w-3xl">
+        <span class="text-coast-gold uppercase tracking-[0.3em] text-[10px] font-bold block mb-3">COAST Charter & Concierge</span>
+        <h2 class="text-3xl md:text-5xl font-medium mb-6 leading-tight">Elevating Vacation into <br><span class="italic font-normal text-coast-gold">An Art Form</span></h2>
+        <p class="text-white/75 text-sm md:text-base mb-12 font-light leading-relaxed">
+          Every stay booked via our platform unlocks access to our dedicated 24/7 concierge system, fully linked to real-time operations databases. We handle details from airport helicopter transfers to private yacht rentals flawlessly.
+        </p>
+      </div>
+
+      <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+        <div class="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition-all group shadow-inner">
+          <div class="text-coast-gold text-3xl mb-5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-ship"></i></div>
+          <h3 class="text-lg font-bold mb-2">Boat Charters</h3>
+          <p class="text-xs text-white/70 leading-relaxed font-light">Private excursions to the Blue Cave and hidden bays of the Riviera.</p>
+        </div>
+        <div class="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition-all group shadow-inner">
+          <div class="text-coast-gold text-3xl mb-5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-utensils"></i></div>
+          <h3 class="text-lg font-bold mb-2">Private Chef</h3>
+          <p class="text-xs text-white/70 leading-relaxed font-light">Gourmet Mediterranean dining prepared directly inside your premium villa kitchen.</p>
+        </div>
+        <div class="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition-all group shadow-inner">
+          <div class="text-coast-gold text-3xl mb-5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-car"></i></div>
+          <h3 class="text-lg font-bold mb-2">VIP Transfers</h3>
+          <p class="text-xs text-white/70 leading-relaxed font-light">Luxury personal transport arranged from Tirana or Vlora Airport.</p>
+        </div>
+        <div class="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition-all group shadow-inner">
+          <div class="text-coast-gold text-3xl mb-5 group-hover:scale-110 transition-transform"><i class="fa-solid fa-sparkles"></i></div>
+          <h3 class="text-lg font-bold mb-2">Housekeeping</h3>
+          <p class="text-xs text-white/70 leading-relaxed font-light">Professional maintenance and comprehensive 24/7 guest support.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TWIN REGISTER & UPLOAD FORMS -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-28">
+      
+      <!-- COLUMN 1: CLIENT REGISTRATION -->
+      <section id="register" class="bg-coast-softWhite p-8 md:p-12 rounded-[2rem] border border-coast-navy/5 shadow-xl scroll-mt-24">
+        <div class="flex items-center space-x-4 mb-8">
+          <div class="bg-coast-sand text-coast-navy p-4 rounded-2xl border border-coast-navy/10">
+            <i class="fa-solid fa-signature text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl md:text-3xl font-bold text-coast-navy">Join the Exclusive Registry</h2>
+            <p class="text-coast-grey text-xs mt-1">Inserts records directly to your Supabase `users` database table</p>
+          </div>
+        </div>
+
+        <form id="userForm" onsubmit="submitUser(event)" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">First Name</label>
+              <input type="text" id="firstName" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="John">
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">Last Name</label>
+              <input type="text" id="lastName" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="Doe">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">Email Address</label>
+            <input type="email" id="userEmail" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="johndoe@luxury.com">
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">Phone Number</label>
+            <input type="tel" id="userPhone" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="+1 (555) 019-2834">
+          </div>
+
+          <div class="flex items-center space-x-3 bg-coast-sand/50 p-4.5 rounded-xl border border-coast-navy/10">
+            <input type="checkbox" id="isHost" class="h-4.5 w-4.5 text-coast-navy focus:ring-coast-navy border-coast-navy/20 rounded cursor-pointer">
+            <label for="isHost" class="text-xs text-coast-navy font-bold select-none cursor-pointer">I want to list my property portfolio as a Host</label>
+          </div>
+
+          <button type="submit" class="w-full bg-coast-navy hover:bg-black text-white font-bold py-4.5 rounded-xl tracking-wider text-xs uppercase transition-all shadow-md hover:scale-[1.01] duration-300">
+            Register Account & Get Database ID
+          </button>
+        </form>
+      </section>
+
+      <!-- COLUMN 2: HOST PORTAL (PROPERTY UPLOAD) -->
+      <section id="host" class="bg-coast-softWhite p-8 md:p-12 rounded-[2rem] border border-coast-navy/5 shadow-xl scroll-mt-24">
+        <div class="flex items-center space-x-4 mb-8">
+          <div class="bg-coast-sand text-coast-navy p-4 rounded-2xl border border-coast-navy/10">
+            <i class="fa-solid fa-house-chimney-user text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl md:text-3xl font-bold text-coast-navy">Host Console - Publish Villa</h2>
+            <p class="text-coast-grey text-xs mt-1">Inserts records directly to your Supabase `properties` database table</p>
+          </div>
+        </div>
+
+        <form id="propertyForm" onsubmit="submitProperty(event)" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold">Host Database ID</label>
+                <button type="button" onclick="createQuickHost()" class="text-coast-gold hover:text-coast-darkGold font-bold text-[10px] uppercase transition-colors tracking-wider flex items-center space-x-1">
+                  <i class="fa-solid fa-user-plus"></i>
+                  <span>Quick Gen Host ID</span>
+                </button>
+              </div>
+              <select id="hostId" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy">
+                <option value="">Loading valid hosts...</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">Base Price (Per Night)</label>
+              <input type="number" id="basePrice" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="e.g. 1450">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">Villa Title</label>
+            <input type="text" id="propTitle" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="e.g. Villa Vista Del Mar">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="col-span-1 md:col-span-2">
+              <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">City & Country Location</label>
+              <input type="text" id="propLocation" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="e.g. Palasë, Albania">
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">Max Guests</label>
+              <input type="number" id="maxGuests" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="e.g. 6">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold mb-2">Villa Description</label>
+            <textarea id="propDescription" rows="2" required class="w-full px-4 py-3.5 bg-coast-sand/50 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold focus:bg-white focus:border-transparent text-sm transition-all text-coast-navy" placeholder="A brief elegant description showcasing the prime features..."></textarea>
+          </div>
+
+          <button type="submit" class="w-full bg-coast-navy hover:bg-black text-white font-bold py-4.5 rounded-xl tracking-wider text-xs uppercase transition-all shadow-md hover:scale-[1.01] duration-300">
+            Publish Villa to Database
+          </button>
+        </form>
+      </section>
+
+    </div>
+
+    <!-- BLOG PREVIEW SECTION -->
+    <section class="mb-28 text-center">
+      <p class="text-coast-gold uppercase tracking-[3px] text-xs font-bold mb-2">Explore Palasa</p>
+      <h3 class="text-3xl md:text-5xl font-medium text-coast-navy mb-12">Riviera Moments</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="relative group h-[300px] overflow-hidden rounded-2xl shadow-md cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=2070" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Beach Event">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end text-left">
+            <p class="text-[10px] text-coast-gold uppercase tracking-widest font-bold">Events</p>
+            <h5 class="font-bold text-white text-lg mt-1">Summer Music Festivals 2026</h5>
+          </div>
+        </div>
+        <div class="relative group h-[300px] overflow-hidden rounded-2xl shadow-md cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1544551763-47a0159f963f?q=80&w=2070" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Diving">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end text-left">
+            <p class="text-[10px] text-coast-gold uppercase tracking-widest font-bold">Adventure</p>
+            <h5 class="font-bold text-white text-lg mt-1">The Secret Caves of Palasa</h5>
+          </div>
+        </div>
+        <div class="relative group h-[300px] overflow-hidden rounded-2xl shadow-md cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1974" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Sunset">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end text-left">
+            <p class="text-[10px] text-coast-gold uppercase tracking-widest font-bold">Lifestyle</p>
+            <h5 class="font-bold text-white text-lg mt-1">Best Sunset Spots in Green Coast</h5>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="mb-20 scroll-mt-24 max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="text-coast-gold uppercase tracking-[0.2em] text-xs font-bold block mb-3">Travel Information</span>
+        <h2 class="text-3xl md:text-5xl font-medium text-coast-navy">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-coast-softWhite rounded-2xl border border-coast-navy/5 overflow-hidden shadow-sm">
+          <button onclick="toggleFaq(1)" class="w-full p-6 text-left flex justify-between items-center focus:outline-none">
+            <span class="font-bold text-sm md:text-base text-coast-navy">Where are the properties located?</span>
+            <i id="faqIcon1" class="fa-solid fa-chevron-down text-coast-navy transition-transform duration-300"></i>
+          </button>
+          <div id="faqContent1" class="hidden px-6 pb-6 text-xs md:text-sm text-coast-grey leading-relaxed font-light border-t border-coast-navy/5 pt-4">
+            Within the elite, highly secure Green Coast Resort in Palasa, Albania, offering direct beach access, premium pools, and 24/7 guest maintenance.
+          </div>
+        </div>
+
+        <div class="bg-coast-softWhite rounded-2xl border border-coast-navy/5 overflow-hidden shadow-sm">
+          <button onclick="toggleFaq(2)" class="w-full p-6 text-left flex justify-between items-center focus:outline-none">
+            <span class="font-bold text-sm md:text-base text-coast-navy">What is the check-in process?</span>
+            <i id="faqIcon2" class="fa-solid fa-chevron-down text-coast-navy transition-transform duration-300"></i>
+          </button>
+          <div id="faqContent2" class="hidden px-6 pb-6 text-xs md:text-sm text-coast-grey leading-relaxed font-light border-t border-coast-navy/5 pt-4">
+            Personalized check-in with a designated Coast Villas concierge manager directly at the property, guiding you through all smart features and services.
+          </div>
+        </div>
+
+        <div class="bg-coast-softWhite rounded-2xl border border-coast-navy/5 overflow-hidden shadow-sm">
+          <button onclick="toggleFaq(3)" class="w-full p-6 text-left flex justify-between items-center focus:outline-none">
+            <span class="font-bold text-sm md:text-base text-coast-navy">Do you offer long-term stays?</span>
+            <i id="faqIcon3" class="fa-solid fa-chevron-down text-coast-navy transition-transform duration-300"></i>
+          </button>
+          <div id="faqContent3" class="hidden px-6 pb-6 text-xs md:text-sm text-coast-grey leading-relaxed font-light border-t border-coast-navy/5 pt-4">
+            Yes, specialized monthly rates are fully available upon request for stays over 28 days. Reach out directly through our WhatsApp portal tool.
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DATABASE SLIDE-OVER CONTROL PANEL -->
+  <div id="databasePortal" class="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-coast-navy text-white shadow-2xl border-l border-white/10 p-8 transform translate-x-full transition-transform duration-500 flex flex-col justify-between overflow-y-auto">
+    <div>
+      <div class="flex justify-between items-center border-b border-white/10 pb-5 mb-6">
+        <div class="flex items-center space-x-3.5">
+          <div class="p-2.5 bg-coast-gold/15 rounded-xl text-coast-gold">
+            <i class="fa-solid fa-server text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold font-semibold serif-font tracking-wide">DB Control Center</h3>
+            <p class="text-[10px] text-coast-sand uppercase tracking-widest font-semibold opacity-80">Supabase Cloud Pipeline</p>
+          </div>
+        </div>
+        <button onclick="togglePortal()" class="text-white/60 hover:text-white transition-colors p-1.5 hover:bg-white/5 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- PORTAL CORE FORM -->
+      <div class="space-y-6">
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-coast-gold font-bold mb-2">Paste Your Live Render API Link</label>
+          <div class="flex space-x-2">
+            <input type="text" id="renderUrlInput" class="w-full px-4 py-3 border border-white/10 bg-white/5 rounded-xl text-sm focus:ring-2 focus:ring-coast-gold focus:border-transparent outline-none text-coast-sand" placeholder="https://coast-luxury-villas-backend.onrender.com">
+            <button onclick="linkAPI()" class="bg-coast-gold hover:bg-coast-darkGold text-coast-navy font-bold px-4 rounded-xl text-xs transition-colors flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-link"></i>
+              <span>Link API</span>
+            </button>
+          </div>
+          <p class="text-[11px] text-white/60 mt-2 leading-relaxed">Ensure you input your deployed Render URL and not your local PostgreSQL configurations directly.</p>
+        </div>
+
+        <!-- LIVE DIAGNOSTIC BOX -->
+        <div class="bg-white/5 rounded-2xl border border-white/10 p-6 space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-3">
+            <span class="text-xs uppercase tracking-wider text-coast-gold font-bold">API Diagnostics</span>
+            <span id="diagnosticStatusBadge" class="text-[10px] uppercase font-bold text-red-300 bg-red-400/10 px-2.5 py-0.5 rounded border border-red-400/20">Not Linked</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div class="flex justify-between items-center">
+              <span class="text-white/60">Target URL</span>
+              <span id="diagTargetUrl" class="font-mono text-[10px] truncate max-w-[210px] text-white/80">None</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-white/60">Connection Handshake</span>
+              <span id="diagHandshake" class="font-bold text-red-400">Idle</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-white/60">Database Status</span>
+              <span id="diagDbStatus" class="font-bold text-red-400">Offline</span>
+            </div>
+          </div>
+
+          <!-- Loading Spinner area -->
+          <div id="portalLoader" class="hidden flex items-center justify-center space-x-2 bg-coast-navy/50 py-3 rounded-xl border border-white/5">
+            <i class="fa-solid fa-circle-notch animate-spin text-coast-gold text-sm"></i>
+            <span class="text-[11px] text-white/80">Pinging Render endpoint...</span>
+          </div>
+        </div>
+
+        <!-- REGISTERED USER EXPLORER -->
+        <div class="bg-white/5 rounded-2xl border border-white/10 p-6 space-y-3">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <span class="text-xs uppercase tracking-wider text-coast-gold font-bold">Registered Users Lookup</span>
+            <button onclick="fetchRegisteredUsers()" class="text-[10px] text-white/80 hover:text-coast-gold font-bold uppercase transition-colors"><i class="fa-solid fa-sync mr-1"></i> Refresh List</button>
+          </div>
+          <div id="userLookupContainer" class="max-h-36 overflow-y-auto space-y-2 text-xs pr-1">
+            <p class="text-white/40 italic text-center py-2">Click Refresh List to query users table...</p>
+          </div>
+        </div>
+
+        <!-- SAMPLE ACTION TESTS -->
+        <div class="space-y-2">
+          <span class="text-[10px] uppercase tracking-wider text-coast-gold font-bold block mb-2">Diagnostic Tools</span>
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="sendDiagnosticTest()" class="w-full bg-white/5 hover:bg-white/10 border border-white/15 py-3.5 rounded-xl text-xs font-semibold text-white/90 flex items-center justify-center space-x-2 transition-all">
+              <i class="fa-solid fa-bolt-lightning text-coast-gold text-xs"></i>
+              <span>Send Connection Test</span>
+            </button>
+            <button onclick="fetchProperties()" class="w-full bg-white/5 hover:bg-white/10 border border-white/15 py-3.5 rounded-xl text-xs font-semibold text-white/90 flex items-center justify-center space-x-2 transition-all">
+              <i class="fa-solid fa-database text-coast-gold text-xs"></i>
+              <span>Fetch Live Villas</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-white/10 pt-5 mt-8 flex justify-between items-center text-[10px] text-white/40">
+      <span>COAST Premium Integration Suite v2.0</span>
+      <span>Managed Anonymously</span>
+    </div>
+  </div>
+
+  <!-- BOOKING INQUIRY MODAL (POPUP / WHATSAPP CONNECTED) -->
+  <div id="bookingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-coast-softWhite rounded-3xl max-w-lg w-full p-8 relative shadow-2xl border border-coast-navy/10 transform scale-95 transition-transform duration-300">
+      <button onclick="closeBookingModal()" class="absolute top-5 right-5 text-coast-navy/60 hover:text-coast-navy p-1.5 hover:bg-coast-sand rounded-lg transition-all">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      
+      <div class="mb-6">
+        <span class="text-coast-gold uppercase tracking-[0.2em] text-[10px] font-bold block mb-1">Request Availability</span>
+        <h3 id="modalVillaTitle" class="text-2xl font-bold text-coast-navy">Villa Typology</h3>
+        <p id="modalVillaCap" class="text-coast-grey text-xs mt-1">Connecting to concierge...</p>
+      </div>
+
+      <form id="whatsappForm" onsubmit="submitBooking(event)" class="space-y-5">
+        <div class="form-group">
+          <label class="block text-[10px] uppercase tracking-wider text-coast-navy font-bold mb-1.5">Selected Typology</label>
+          <input type="text" id="selectedTypology" readonly class="w-full px-4 py-3 border border-coast-navy/10 rounded-xl text-xs bg-coast-sand/50 text-coast-navy font-bold focus:outline-none">
+        </div>
+
+        <div id="bedroomSelectionGroup" class="hidden">
+          <label class="block text-[10px] uppercase tracking-wider text-coast-navy font-bold mb-1.5">Apartment Size</label>
+          <select id="apartmentBedrooms" class="w-full px-4 py-3 border border-coast-navy/10 rounded-xl text-xs focus:ring-1 focus:ring-coast-gold outline-none bg-coast-sand/50 text-coast-navy">
+            <option value="1 Bedroom">1 Bedroom</option>
+            <option value="2 Bedroom">2 Bedroom</option>
+            <option value="3 Bedroom">3 Bedroom</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-coast-navy font-bold mb-1.5">Full Name</label>
+          <input type="text" id="userName" required class="w-full px-4 py-3 border border-coast-navy/10 rounded-xl text-xs focus:ring-1 focus:ring-coast-gold outline-none bg-coast-sand/50 text-coast-navy" placeholder="Enter your name">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] uppercase tracking-wider text-coast-navy font-bold mb-1.5">Check-In</label>
+            <input type="date" id="checkIn" required class="w-full px-4 py-3 border border-coast-navy/10 rounded-xl text-xs focus:ring-1 focus:ring-coast-gold outline-none bg-coast-sand/50 text-coast-navy">
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase tracking-wider text-coast-navy font-bold mb-1.5">Check-Out</label>
+            <input type="date" id="checkOut" required class="w-full px-4 py-3 border border-coast-navy/10 rounded-xl text-xs focus:ring-1 focus:ring-coast-gold outline-none bg-coast-sand/50 text-coast-navy">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-coast-navy font-bold mb-1.5">Guests Count</label>
+          <input type="number" id="guestCount" required min="1" class="w-full px-4 py-3 border border-coast-navy/10 rounded-xl text-xs focus:ring-1 focus:ring-coast-gold outline-none bg-coast-sand/50 text-coast-navy" placeholder="e.g. 4">
+        </div>
+
+        <button type="submit" class="w-full bg-coast-navy hover:bg-black text-white font-bold py-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md mt-2 flex items-center justify-center space-x-2">
+          <i class="fa-brands fa-whatsapp text-sm text-green-400"></i>
+          <span>Inquire on WhatsApp</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="backdrop" onclick="togglePortal()" class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3"></div>
+
+  <!-- FOOTER -->
+  <footer class="py-12 border-t border-coast-navy/5 bg-coast-softWhite/50 text-center text-xs tracking-widest font-semibold uppercase opacity-80">
+    <p>COAST VILLAS · PALASA · GREEN COAST · EST. 2021</p>
+  </footer>
+
+  <!-- SCRIPTING LOGIC -->
+  <script>
+    // AUTOMATIC DEFAULT URL FALLBACK
+    let activeApiUrl = localStorage.getItem('COAST_ACTIVE_API_URL') || 'https://coast-luxury-villas-backend.onrender.com';
+    let fetchedPropertiesList = [];
+
+    const mockVillas = [
+      {
+        property_id: 201,
+        title: "Apartments",
+        description: "Modern seaside layouts optimized for comfortable retreats in elite spaces.",
+        location_city: "Palasë",
+        location_country: "Albania",
+        max_guests: 7,
+        base_price_per_night: 280,
+        spec_label: "Options",
+        spec_value: "1-3 BR",
+        img: "https://terrainvestsolutions.com/Seaclusion-Villa/seaclusion-villa1.webp"
+      },
+      {
+        property_id: 202,
+        title: "Hotel Room",
+        description: "Exceptional boutique style hotel layouts containing state of the art amenities.",
+        location_city: "Palasë",
+        location_country: "Albania",
+        max_guests: 3,
+        base_price_per_night: 180,
+        spec_label: "Status",
+        spec_value: "Premium",
+        img: "https://terrainvestsolutions.com/Room-205-206/room-205-206-6.webp"
+      },
+      {
+        property_id: 203,
+        title: "Twin Small Villa",
+        description: "Elegantly constructed semi-detached villa configurations ideal for small family outings.",
+        location_city: "Palasë",
+        location_country: "Albania",
+        max_guests: 7,
+        base_price_per_night: 420,
+        spec_label: "Bedrooms",
+        spec_value: "2 BR",
+        img: "https://a0.muscache.com/im/pictures/hosting/Hosting-1427367678498067617/original/c202414a-b0b4-4b04-9b48-2041480b81e9.jpeg?im_w=720"
+      },
+      {
+        property_id: 204,
+        title: "Twin Big Villa",
+        description: "Spacious luxury duplex villa structures engineered to afford panoramic sea vistas.",
+        location_city: "Palasë",
+        location_country: "Albania",
+        max_guests: 9,
+        base_price_per_night: 650,
+        spec_label: "Bedrooms",
+        spec_value: "2-3 BR",
+        img: "https://bookingenginecdn.hostaway.com/listing/56249-389673-zUPAWh1qiaha5mwpURl4uMDoHmfwYg0Hc9V4WR--7DqA-681e83f089142?width=3840&quality=70&format=webp&v=2"
+      },
+      {
+        property_id: 205,
+        title: "Pool Villa",
+        description: "Extravagant standalone estates offering a private luxury swimming pool and scenic yards.",
+        location_city: "Palasë",
+        location_country: "Albania",
+        max_guests: 8,
+        base_price_per_night: 980,
+        spec_label: "Feature",
+        spec_value: "Private Pool",
+        img: "https://www.hotels-al.com/data/Imgs/OriginalPhoto/16759/1675997/1675997676/privat-pool-green-gem-villa-82-green-coast-dhermi-img-39.JPEG"
+      },
+      {
+        property_id: 206,
+        title: "Premium Villa",
+        description: "Absolute front-line architectural masterpieces providing direct access to sandy coastlines.",
+        location_city: "Palasë",
+        location_country: "Albania",
+        max_guests: 12,
+        base_price_per_night: 1800,
+        spec_label: "Design",
+        spec_value: "Architectural",
+        img: "https://tag-estate.com//wp-content/uploads/2022/04/Foto-3-1024x683-1.jpg"
+      }
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderPropertiesGrid(mockVillas);
+      refreshHostDropdown();
+      if (activeApiUrl) {
+        document.getElementById('renderUrlInput').value = activeApiUrl;
+        verifyAndEstablishAPI(activeApiUrl);
+      }
+    });
+
+    async function refreshHostDropdown() {
+      const select = document.getElementById('hostId');
+      if (!select) return;
+
+      if (!activeApiUrl) {
+        select.innerHTML = `<option value="777" selected>Sandbox Host #777 (Offline Demo)</option>`;
+        return;
+      }
+
+      select.innerHTML = `<option value="">Loading Hosts...</option>`;
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const response = await fetch(`${activeApiUrl}/api/users`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`Server returned status ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.users) {
+          const hosts = data.users.filter(u => u.is_host);
+          if (hosts.length > 0) {
+            select.innerHTML = hosts.map(host => 
+              `<option value="${host.user_id}">${host.first_name} ${host.last_name} (ID: ${host.user_id})</option>`
+            ).join('');
+          } else {
+            select.innerHTML = `<option value="">No Hosts in DB - Click Quick Gen Host ID Above!</option>`;
+            showToast("Empty Tables", "Successfully connected, but no users exist yet. Click 'Quick Gen Host ID' to create one!", "info");
+          }
+        } else {
+          select.innerHTML = `<option value="">Database Query Failed</option>`;
+          showToast("Database Error", data.error || "Failed to retrieve users from your cloud database tables.", "error");
+        }
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          select.innerHTML = `<option value="">Render Server is Sleeping (Cold Start)...</option>`;
+          showToast("Render Cold Start", "Your web service is booting up on Render. This may take up to 60 seconds on the free tier. Please wait and try again.", "info");
+        } else {
+          select.innerHTML = `<option value="">Error: Check API Endpoint</option>`;
+          showToast("Connection Refused", "Could not reach API. Confirm your Render environment variables and that your server hasn't crashed.", "error");
+        }
+      }
+    }
+
+    async function createQuickHost() {
+      if (!activeApiUrl) {
+        showToast("Sandbox Mode", "Using virtual database index '777' for offline mock listing.", "info");
+        refreshHostDropdown();
+        document.getElementById('hostId').value = "777";
+        return;
+      }
+
+      const randomSuf = Math.floor(Math.random() * 9000) + 1000;
+      const payload = {
+        first_name: "Premium",
+        last_name: `Host #${randomSuf}`,
+        email: `vip.host.${randomSuf}@greencoast.al`,
+        password_hash: "unsecured-vip-token-123",
+        phone_number: "+355-VIP-HOST",
+        is_host: true
+      };
+
+      showToast("Generating...", "Registering host account...", "info");
+
+      try {
+        const response = await fetch(`${activeApiUrl}/api/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.success && data.user) {
+          const generatedId = data.user.user_id;
+          showToast("Host Created", `Host ID '${generatedId}' successfully saved to 'users' table! Field auto-filled.`, "success");
+          await refreshHostDropdown();
+          document.getElementById('hostId').value = generatedId;
+          fetchRegisteredUsers();
+        } else {
+          showToast("Generation Error", data.error || "Could not complete account setup.", "error");
+        }
+      } catch (err) {
+        showToast("API Route Failed", "Unable to transmit Host creation query.", "error");
+      }
+    }
+
+    async function fetchRegisteredUsers() {
+      const container = document.getElementById('userLookupContainer');
+      if (!activeApiUrl) {
+        container.innerHTML = `<p class="text-white/40 italic text-center py-2">System offline. Link a live Render link first.</p>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="flex items-center justify-center space-x-1.5 py-4">
+          <i class="fa-solid fa-circle-notch animate-spin text-coast-gold"></i>
+          <span class="text-white/60 text-[11px]">Querying users...</span>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`${activeApiUrl}/api/users`);
+        const data = await response.json();
+
+        if (data.success && data.users && data.users.length > 0) {
+          container.innerHTML = '';
+          data.users.forEach(user => {
+            const hostBadge = user.is_host 
+              ? `<span class="bg-coast-gold/20 text-coast-gold px-2 py-0.5 rounded text-[9px] uppercase font-bold border border-coast-gold/30">Host</span>`
+              : `<span class="bg-white/10 text-white/60 px-2 py-0.5 rounded text-[9px] uppercase font-bold border border-white/5">Client</span>`;
+              
+            const row = document.createElement('div');
+            row.className = "flex justify-between items-center p-2 bg-white/5 hover:bg-white/10 rounded-lg border border-white/5 transition-all cursor-pointer";
+            row.onclick = () => {
+              document.getElementById('hostId').value = user.user_id;
+              showToast("ID Copied", `Selected User ID '${user.user_id}' copied to Host Console!`, "success");
+              togglePortal();
+            };
+            row.innerHTML = `
+              <div>
+                <span class="font-bold text-white/90 font-semibold text-[11px]">${user.first_name} ${user.last_name}</span>
+                <span class="text-white/40 font-mono text-[10px] ml-1.5">(ID: ${user.user_id})</span>
+              </div>
+              <div>${hostBadge}</div>
+            `;
+            container.appendChild(row);
+          });
+        } else {
+          container.innerHTML = `<p class="text-white/40 italic text-center py-2">No user accounts found in the database.</p>`;
+        }
+      } catch (err) {
+        container.innerHTML = `<p class="text-red-400 italic text-center py-2">Error querying 'users' table.</p>`;
+      }
+    }
+
+    function togglePortal() {
+      const portal = document.getElementById('databasePortal');
+      const backdrop = document.getElementById('backdrop');
+      
+      if (portal.classList.contains('translate-x-full')) {
+        portal.classList.remove('translate-x-full');
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100');
+      } else {
+        portal.classList.add('translate-x-full');
+        backdrop.classList.remove('opacity-100');
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    function showToast(title, msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const colors = {
+        success: 'bg-emerald-950/95 border-emerald-500/30 text-emerald-100',
+        error: 'bg-red-950/95 border-red-500/30 text-red-100',
+        info: 'bg-coast-navy/95 border-coast-gold/30 text-white'
+      };
+
+      const icons = {
+        success: '<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>',
+        error: '<i class="fa-solid fa-triangle-exclamation text-red-400 text-base"></i>',
+        info: '<i class="fa-solid fa-circle-info text-coast-gold text-base"></i>'
+      };
+
+      toast.className = `p-4 rounded-xl border ${colors[type]} flex items-start space-x-3 shadow-lg min-w-[310px] transition-all duration-300 transform translate-y-2 opacity-0`;
+      toast.innerHTML = `
+        <div class="pt-0.5">${icons[type]}</div>
+        <div>
+          <div class="font-bold text-xs uppercase tracking-wider text-[10px]">${title}</div>
+          <div class="text-xs font-light mt-0.5">${msg}</div>
+        </div>
+      `;
+
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 50);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function linkAPI() {
+      let url = document.getElementById('renderUrlInput').value.trim();
+      
+      if (!url) {
+        showToast("Error", "Please paste a valid Render API URL first.", "error");
+        return;
+      }
+
+      if (url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
+
+      verifyAndEstablishAPI(url);
+    }
+
+    async function verifyAndEstablishAPI(url) {
+      const loader = document.getElementById('portalLoader');
+      const diagnosticBadge = document.getElementById('diagnosticStatusBadge');
+      const connectionHUD = document.getElementById('connectionHUD');
+      
+      document.getElementById('diagTargetUrl').textContent = url;
+      document.getElementById('diagHandshake').textContent = "Pinging...";
+      document.getElementById('diagHandshake').className = "font-bold text-amber-400 animate-pulse";
+      document.getElementById('diagDbStatus').textContent = "Checking...";
+      document.getElementById('diagDbStatus').className = "font-bold text-gray-400";
+      
+      loader.classList.remove('hidden');
+      diagnosticBadge.textContent = "Connecting...";
+      diagnosticBadge.className = "text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded border border-amber-400/20";
+
+      try {
+        const response = await fetch(url, { method: 'GET' });
+        const data = await response.json();
+
+        loader.classList.add('hidden');
+
+        if (data.status === "online") {
+          activeApiUrl = url;
+          localStorage.setItem('COAST_ACTIVE_API_URL', url);
+          
+          document.getElementById('diagHandshake').textContent = "Healthy";
+          document.getElementById('diagHandshake').className = "font-bold text-emerald-400";
+          
+          if (data.database === "connected") {
+            document.getElementById('diagDbStatus').textContent = "Connected (Live)";
+            document.getElementById('diagDbStatus').className = "font-bold text-emerald-400";
+            
+            diagnosticBadge.textContent = "Live Portal";
+            diagnosticBadge.className = "text-[10px] uppercase font-bold text-emerald-400 bg-emerald-400/10 px-2.5 py-0.5 rounded border border-emerald-400/20";
+            
+            connectionHUD.className = "flex items-center text-xs text-emerald-800 bg-emerald-100/80 px-4 py-2 rounded-full border border-emerald-200 shadow-sm";
+            connectionHUD.innerHTML = `<span class="h-2.5 w-2.5 rounded-full bg-emerald-600 mr-2.5 animate-pulse"></span> Connected to Cloud Database!`;
+            
+            showToast("Database Linked Successfully", "Premium cloud portal with Supabase has been linked!", "success");
+            refreshHostDropdown();
+            fetchProperties();
+          } else {
+            document.getElementById('diagDbStatus').textContent = "Offline (Local Backup)";
+            document.getElementById('diagDbStatus').className = "font-bold text-amber-400";
+            
+            diagnosticBadge.textContent = "API Active (No DB)";
+            diagnosticBadge.className = "text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded border border-red-400/20";
+            
+            connectionHUD.className = "flex items-center text-xs text-amber-800 bg-emerald-100/80 px-4 py-2 rounded-full border border-emerald-200";
+            connectionHUD.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-600 mr-2 animate-ping"></span> Warning: Database Offline`;
+            
+            showToast("API Connected, Database Offline", data.error || "Verify database credential strings.", "error");
+          }
+        } else {
+          throw new Error("Invalid response schema from API");
+        }
+      } catch (err) {
+        loader.classList.add('hidden');
+        document.getElementById('diagHandshake').textContent = "Failed";
+        document.getElementById('diagHandshake').className = "font-bold text-red-400";
+        document.getElementById('diagDbStatus').textContent = "Offline";
+        document.getElementById('diagDbStatus').className = "font-bold text-red-400";
+        
+        diagnosticBadge.textContent = "Connection Error";
+        diagnosticBadge.className = "text-[10px] uppercase font-bold text-red-400 bg-red-400/10 px-2.5 py-0.5 rounded border border-red-400/20";
+        
+        connectionHUD.className = "flex items-center text-xs text-red-700 font-bold bg-red-100/50 px-4 py-2 rounded-full border border-red-200 shadow-sm";
+        connectionHUD.innerHTML = `<span class="h-2 w-2 rounded-full bg-red-600 mr-2.5 animate-ping"></span> Offline Sandbox Mode`;
+        
+        showToast("Connection Refused", "Cannot contact Render server. Check for cold starts.", "error");
+      }
+    }
+
+    async function sendDiagnosticTest() {
+      if (!activeApiUrl) {
+        showToast("Configuration Missing", "You must link a live API first.", "info");
+        return;
+      }
+
+      showToast("Testing...", "Transmitting connection testing payload...", "info");
+
+      try {
+        const response = await fetch(`${activeApiUrl}/api/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ test: true })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast("Diagnostic Complete", "Payload successfully parsed by Node server!", "success");
+        } else {
+          showToast("Response Error", "Server responded with an unexpected error.", "error");
+        }
+      } catch (err) {
+        showToast("Transmission Failed", "Failed to complete diagnostic call.", "error");
+      }
+    }
+
+    async function fetchProperties() {
+      if (!activeApiUrl) {
+        showToast("System Offline", "Running in local simulation mode. Real-time fetch is offline.", "info");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${activeApiUrl}/api/properties`);
+        const data = await response.json();
+
+        if (data.success && data.properties && data.properties.length > 0) {
+          fetchedPropertiesList = data.properties;
+          renderPropertiesGrid(fetchedPropertiesList);
+          showToast("Synchronized", `Successfully fetched ${data.properties.length} live villas from Supabase!`, "success");
+        } else {
+          fetchedPropertiesList = [];
+          renderPropertiesGrid(mockVillas);
+          showToast("Sync Status", "Table is connected but empty. Showing fallbacks.", "info");
+        }
+      } catch (err) {
+        renderPropertiesGrid(mockVillas);
+        showToast("Fetch Failed", "Failed to sync tables. Verify Database credentials on Render.", "error");
+      }
+    }
+
+    function renderPropertiesGrid(properties) {
+      const grid = document.getElementById('propertiesGrid');
+      grid.innerHTML = ''; 
+
+      properties.forEach(prop => {
+        const card = document.createElement('div');
+        card.className = "bg-coast-softWhite rounded-3xl overflow-hidden shadow-md border border-coast-navy/5 transition-all hover:shadow-2xl hover:-translate-y-2 duration-300 flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="relative h-64 bg-coast-sand overflow-hidden group">
+              <img src="${prop.img || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800'}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Villa">
+              <span class="absolute top-4 right-4 bg-coast-navy/95 backdrop-blur text-coast-gold text-xs font-bold px-3.5 py-2 rounded-xl border border-coast-gold/30">From $${prop.base_price_per_night || '250'} / night</span>
+            </div>
+            <div class="p-6">
+              <div class="text-[10px] uppercase text-coast-gold font-bold tracking-[0.2em] mb-2">${prop.location_city || 'Palasë'}, ${prop.location_country || 'Albania'}</div>
+              <h3 class="text-2xl font-bold text-coast-navy mb-3">${prop.title}</h3>
+              <p class="text-coast-grey text-xs md:text-sm line-clamp-3 mb-6 font-light leading-relaxed">${prop.description}</p>
+            </div>
+          </div>
+          <div class="px-6 pb-6 pt-2">
+            <div class="flex justify-between items-center text-[11px] text-coast-grey/70 pt-4 border-t border-coast-navy/5">
+              <span class="font-semibold uppercase tracking-wider"><i class="fa-solid fa-user-group mr-1.5 text-coast-gold"></i> Max ${prop.max_guests || '4'} Guests</span>
+              <button onclick="openBookingModal('${prop.title.replace(/'/g, "\\'")}', '${prop.spec_label || 'Status'}', '${prop.spec_value || 'Premium'}', ${prop.max_guests || 6}, '${prop.img || ''}')" class="bg-coast-navy text-white hover:bg-black font-semibold px-4 py-2 rounded-lg transition-all border border-transparent">Book Stay</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function applyFilters() {
+      const typology = document.getElementById('searchLocation').value;
+      const guests = document.getElementById('searchGuests').value;
+      const price = document.getElementById('searchPrice').value;
+
+      let sourceList = fetchedPropertiesList.length > 0 ? fetchedPropertiesList : mockVillas;
+
+      let filtered = sourceList.filter(item => {
+        if (typology !== 'all') {
+          if (item.title.toLowerCase() !== typology) return false;
+        }
+        if (guests !== 'all') {
+          if (item.max_guests < parseInt(guests)) return false;
+        }
+        if (price !== 'all') {
+          if (item.base_price_per_night > parseInt(price)) return false;
+        }
+        return true;
+      });
+
+      renderPropertiesGrid(filtered);
+    }
+
+    function resetFilters() {
+      document.getElementById('searchLocation').value = 'all';
+      document.getElementById('searchGuests').value = 'all';
+      document.getElementById('searchPrice').value = 'all';
+      applyFilters();
+    }
+
+    function openBookingModal(title, specLabel, specValue, maxGuests, imageSrc) {
+      const modal = document.getElementById('bookingModal');
+      document.getElementById('modalVillaTitle').textContent = title;
+      document.getElementById('selectedTypology').value = title;
+      document.getElementById('guestCount').max = maxGuests;
+      document.getElementById('guestCount').value = Math.min(4, maxGuests);
+      
+      const bedroomGroup = document.getElementById('bedroomSelectionGroup');
+      if (title.toLowerCase().includes("apartment")) {
+        bedroomGroup.classList.remove('hidden');
+      } else {
+        bedroomGroup.classList.add('hidden');
+      }
+
+      document.getElementById('modalVillaCap').textContent = `${specLabel}: ${specValue} • Max: ${maxGuests} Guests`;
+      
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.querySelector('.transform').classList.remove('scale-95');
+      }, 50);
+    }
+
+    function closeBookingModal() {
+      const modal = document.getElementById('bookingModal');
+      modal.classList.add('opacity-0');
+      modal.querySelector('.transform').classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    async function submitBooking(event) {
+      event.preventDefault();
+
+      const phoneNumber = "355694099488"; 
+      const typology = document.getElementById('selectedTypology').value;
+      const name = document.getElementById('userName').value.trim();
+      const checkInDate = document.getElementById('checkIn').value;
+      const checkOutDate = document.getElementById('checkOut').value;
+      const guests = document.getElementById('guestCount').value;
+
+      let propertyText = typology;
+      if (typology.toLowerCase().includes("apartment")) {
+        propertyText += ` (${document.getElementById('apartmentBedrooms').value})`;
+      }
+
+      const message = `Hello Coast Villas! New Inquiry:\n*Typology:* ${propertyText}\n*Name:* ${name}\n*Check-in:* ${checkInDate}\n*Check-out:* ${checkOutDate}\n*Guests:* ${guests}`;
+      
+      showToast("WhatsApp Redirect", "Opening WhatsApp with your curated booking inquiry...", "info");
+
+      if (activeApiUrl) {
+        try {
+          await fetch(`${activeApiUrl}/api/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              first_name: name.split(' ')[0] || "Client",
+              last_name: name.split(' ')[1] || "Guest",
+              email: `${name.replace(/\s+/g, '').toLowerCase()}@inquiry-whatsapp.com`,
+              password_hash: "unsecured-whatsapp-placeholder",
+              phone_number: "+355-WHATSAPP",
+              is_host: false
+            })
+          });
+        } catch(e) {
+          console.warn("Could not write record to PostgreSQL table before WhatsApp launch.");
+        }
+      }
+
+      closeBookingModal();
+      document.getElementById('whatsappForm').reset();
+
+      setTimeout(() => {
+        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+      }, 800);
+    }
+
+    function toggleFaq(index) {
+      const content = document.getElementById(`faqContent${index}`);
+      const icon = document.getElementById(`faqIcon${index}`);
+      
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      } else {
+        content.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+      }
+    }
+
+    async function submitUser(event) {
+      event.preventDefault();
+      
+      const payload = {
+        first_name: document.getElementById('firstName').value.trim(),
+        last_name: document.getElementById('lastName').value.trim(),
+        email: document.getElementById('userEmail').value.trim(),
+        password_hash: "unsecured-client-demo-hash-123",
+        phone_number: document.getElementById('userPhone').value.trim(),
+        is_host: document.getElementById('isHost').checked
+      };
+
+      if (!activeApiUrl) {
+        showToast("Sandbox Success", `Offline user simulation saved: ${payload.first_name} ${payload.last_name}!`, "success");
+        document.getElementById('userForm').reset();
+        return;
+      }
+
+      showToast("Sending...", "Publishing client records to Supabase...", "info");
+
+      try {
+        const response = await fetch(`${activeApiUrl}/api/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          showToast("Database Synced", `Customer ${payload.first_name} has been successfully added to 'users' table! ID: ${data.user.user_id}`, "success");
+          
+          if (payload.is_host) {
+            await refreshHostDropdown();
+            document.getElementById('hostId').value = data.user.user_id;
+            showToast("Host Configured", `Host ID '${data.user.user_id}' has been pre-filled in your Host Console!`, "info");
+          }
+          
+          document.getElementById('userForm').reset();
+          fetchRegisteredUsers();
+        } else {
+          showToast("Database Error", data.error || "Failed to commit row.", "error");
+        }
+      } catch (err) {
+        showToast("API Route Failed", "Unable to transmit register request.", "error");
+      }
+    }
+
+    async function submitProperty(event) {
+      event.preventDefault();
+
+      const locationRaw = document.getElementById('propLocation').value.split(',');
+      const payload = {
+        host_id: parseInt(document.getElementById('hostId').value),
+        title: document.getElementById('propTitle').value.trim(),
+        description: document.getElementById('propDescription').value.trim(),
+        location_city: locationRaw[0] ? locationRaw[0].trim() : 'Palasë',
+        location_country: locationRaw[1] ? locationRaw[1].trim() : 'Albania',
+        max_guests: parseInt(document.getElementById('maxGuests').value),
+        base_price_per_night: parseFloat(document.getElementById('basePrice').value)
+      };
+
+      if (!activeApiUrl) {
+        showToast("Sandbox Success", `Offline villa simulation saved: ${payload.title}!`, "success");
+        document.getElementById('propertyForm').reset();
+        return;
+      }
+
+      showToast("Sending...", "Publishing villa listings to Supabase...", "info");
+
+      try {
+        const response = await fetch(`${activeApiUrl}/api/properties`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          showToast("Database Synced", `Villa '${payload.title}' committed to 'properties' table successfully!`, "success");
+          document.getElementById('propertyForm').reset();
+          fetchProperties();
+        } else {
+          showToast("Constraint Warning", "Could not add villa. Verify Host ID exists in 'users' table.", "error");
+        }
+      } catch (err) {
+        showToast("API Route Failed", "Unable to transmit listing request.", "error");
+      }
+    }
+  </script>
+
+</body>
+</html>
