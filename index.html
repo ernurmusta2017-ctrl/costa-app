@@ -99,17 +99,19 @@
 <body class="bg-coast-sand text-coast-navy overflow-x-hidden min-h-screen flex flex-col justify-between">
 
   <!-- TOP PREMIUM HUD BAR -->
-  <div class="bg-coast-navy text-white text-xs py-3 px-4 md:px-8 flex justify-between items-center border-b border-white/10 relative z-50 shadow-md">
-    <div class="flex items-center space-x-6">
-      <a href="tel:+355694099488" class="flex items-center hover:text-coast-gold transition-colors duration-300">
-        <i class="fa-solid fa-phone text-coast-gold mr-2 text-[12px]"></i>
-        <span class="font-medium tracking-wide">+355 69 409 9488</span>
+  <div class="bg-coast-navy text-white text-xs py-3.5 px-4 md:px-8 flex justify-between items-center border-b border-white/10 relative z-50 shadow-md">
+    <!-- Left Side: Location -->
+    <div class="flex items-center text-white/80">
+      <i class="fa-solid fa-location-dot text-coast-gold mr-2 text-[12px]"></i>
+      <span class="tracking-wide text-[10px] md:text-xs font-light">Green Coast Resort, Palasë</span>
+    </div>
+
+    <!-- Right Side: Phone Number Pill Badge -->
+    <div class="flex items-center">
+      <a href="tel:+355694099488" class="flex items-center hover:text-coast-gold transition-all duration-300 bg-white/5 hover:bg-white/10 px-3.5 py-1.5 rounded-full border border-white/10 shadow-inner">
+        <i class="fa-solid fa-phone text-coast-gold mr-2 text-[11px]"></i>
+        <span class="font-semibold tracking-wider text-[10px] md:text-xs">+355 69 409 9488</span>
       </a>
-      <span class="hidden md:inline text-white/20">|</span>
-      <span class="hidden md:inline flex items-center text-white/80">
-        <i class="fa-solid fa-location-dot text-coast-gold mr-2 text-[12px]"></i>
-        <span class="tracking-wide">Green Coast Resort, Palasë</span>
-      </span>
     </div>
     
     <!-- Preserved for system triggers (Hidden visually) -->
@@ -135,6 +137,14 @@
       <a href="#register" class="hover:text-coast-gold transition-colors relative after:absolute after:bottom-[-6px] after:left-0 after:w-0 after:h-[2px] after:bg-coast-gold hover:after:w-full after:transition-all after:duration-300">Client Registry</a>
       <a href="#host" class="hover:text-coast-gold transition-colors relative after:absolute after:bottom-[-6px] after:left-0 after:w-0 after:h-[2px] after:bg-coast-gold hover:after:w-full after:transition-all after:duration-300">Host Console</a>
       <a href="#faq" class="hover:text-coast-gold transition-colors relative after:absolute after:bottom-[-6px] after:left-0 after:w-0 after:h-[2px] after:bg-coast-gold hover:after:w-full after:transition-all after:duration-300">FAQ</a>
+    </div>
+
+    <!-- Active Call CTA on Right side of Menu Header -->
+    <div class="flex items-center">
+      <a href="tel:+355694099488" class="flex items-center bg-coast-navy hover:bg-black text-white text-[10px] md:text-xs font-bold px-4 py-2.5 rounded-xl border border-coast-gold/20 transition-all shadow-md tracking-wider uppercase hover:scale-105 active:scale-95 duration-300">
+        <i class="fa-solid fa-phone-volume text-coast-gold mr-2 text-[12px] animate-pulse"></i>
+        <span>Call Concierge</span>
+      </a>
     </div>
 
     <!-- Technical HUD elements hidden to maintain direct client luxury experience -->
