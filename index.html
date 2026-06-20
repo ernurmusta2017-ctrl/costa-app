@@ -111,12 +111,10 @@
         <span class="tracking-wide">Green Coast Resort, Palasë</span>
       </span>
     </div>
-    <div class="flex items-center space-x-4">
-      <span class="hidden sm:inline-block text-[10px] uppercase tracking-[0.25em] text-coast-gold/90 font-bold">Private Rental Club</span>
-      <button onclick="togglePortal()" class="bg-gradient-to-r from-coast-gold to-yellow-500 hover:from-yellow-500 hover:to-coast-gold text-coast-navy font-bold px-4 py-2 rounded-lg text-[11px] tracking-wider transition-all duration-300 flex items-center space-x-2 shadow-lg hover:scale-105 active:scale-95">
-        <i class="fa-solid fa-database animate-pulse"></i>
-        <span>DB CONTROL CENTER</span>
-      </button>
+    
+    <!-- Preserved for system triggers (Hidden visually) -->
+    <div class="hidden flex items-center space-x-4">
+      <button onclick="togglePortal()" id="dbCenterToggler" class="hidden"></button>
     </div>
   </div>
 
@@ -139,12 +137,8 @@
       <a href="#faq" class="hover:text-coast-gold transition-colors relative after:absolute after:bottom-[-6px] after:left-0 after:w-0 after:h-[2px] after:bg-coast-gold hover:after:w-full after:transition-all after:duration-300">FAQ</a>
     </div>
 
-    <div class="flex items-center space-x-4">
-      <span id="connectionHUD" class="flex items-center text-xs text-amber-800 font-bold bg-amber-100/80 px-4 py-2.5 rounded-full border border-amber-300 shadow-md transition-all duration-500 animate-pulse-soft">
-        <span class="h-2.5 w-2.5 rounded-full bg-amber-600 mr-2.5 animate-ping"></span>
-        <span>🔄 Connecting to Cloud Database...</span>
-      </span>
-    </div>
+    <!-- Technical HUD elements hidden to maintain direct client luxury experience -->
+    <span id="connectionHUD" class="hidden"></span>
   </nav>
 
   <!-- HERO SECTION -->
@@ -204,7 +198,6 @@
 
       <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
         <a href="#villas" class="w-full sm:w-auto bg-gradient-to-r from-coast-gold to-yellow-500 hover:from-yellow-500 hover:to-coast-gold text-coast-navy font-bold px-12 py-5 rounded-xl transition-all shadow-xl text-xs tracking-widest uppercase hover:scale-105 hover:shadow-[0_10px_25px_rgba(212,175,55,0.4)] duration-300">Explore Portfolio</a>
-        <button onclick="togglePortal()" class="w-full sm:w-auto border-2 border-white/30 bg-white/5 hover:bg-white/10 hover:border-white text-white font-bold px-12 py-5 rounded-xl transition-all text-xs tracking-widest uppercase hover:scale-105 duration-300 backdrop-blur-md">Custom DB Portal</button>
       </div>
     </div>
   </header>
@@ -214,7 +207,7 @@
     <div class="text-[11px] tracking-[3px] uppercase flex items-center gap-2"><span class="text-coast-gold text-[8px] animate-ping">●</span> 40+ Curated Residencies</div>
     <div class="text-[11px] tracking-[3px] uppercase flex items-center gap-2"><span class="text-coast-gold text-[8px]">●</span> 1,200+ Handled Bookings</div>
     <div class="text-[11px] tracking-[3px] uppercase flex items-center gap-2"><span class="text-coast-gold text-[8px]">●</span> 5-Star Concierge Service</div>
-    <div class="text-[11px] tracking-[3px] uppercase flex items-center gap-2"><span class="text-coast-gold text-[8px]">●</span> Verified Supabase Cloud</div>
+    <div class="text-[11px] tracking-[3px] uppercase flex items-center gap-2"><span class="text-coast-gold text-[8px]">●</span> Secure Client Sync</div>
   </div>
 
   <!-- MAIN CONTAINER -->
@@ -226,12 +219,12 @@
         <div>
           <span class="text-coast-gold uppercase tracking-[0.3em] text-xs font-bold block mb-2">Our Premium Residencies</span>
           <h2 class="text-4xl md:text-5xl font-medium text-coast-navy">Featured Typologies</h2>
-          <p class="text-coast-grey text-sm mt-3 font-light leading-relaxed">Direct, live transactional link with Supabase tables inside the private reservation system.</p>
+          <p class="text-coast-grey text-sm mt-3 font-light leading-relaxed">Direct connection with active frontline resort reservation pipelines.</p>
         </div>
         <div class="flex space-x-3 mt-6 md:mt-0">
           <button onclick="fetchProperties()" class="bg-white hover:bg-coast-sand text-coast-navy font-bold px-6 py-3.5 rounded-xl text-xs flex items-center space-x-2.5 border border-coast-navy/10 transition-all duration-300 shadow-md hover:-translate-y-0.5 active:translate-y-0">
             <i class="fa-solid fa-arrows-rotate text-coast-gold"></i>
-            <span>RELOAD VILLAS</span>
+            <span>RELOAD PORTFOLIO</span>
           </button>
         </div>
       </div>
@@ -290,7 +283,7 @@
           </div>
           <div>
             <h2 class="text-2xl md:text-3xl font-bold text-coast-navy">Join the Exclusive Registry</h2>
-            <p class="text-coast-grey text-xs mt-1 font-light">Inserts Client records directly to your Supabase `users` database table</p>
+            <p class="text-coast-grey text-xs mt-1 font-light">Register a private account to access priority reservation and booking options.</p>
           </div>
         </div>
 
@@ -322,7 +315,7 @@
           </div>
 
           <button type="submit" class="w-full bg-coast-navy hover:bg-black text-white font-bold py-5 rounded-xl tracking-widest text-xs uppercase transition-all shadow-lg hover:scale-[1.01] duration-300">
-            Register Account & Get Database ID
+            Register Account & Activate Member ID
           </button>
         </form>
       </section>
@@ -335,7 +328,7 @@
           </div>
           <div>
             <h2 class="text-2xl md:text-3xl font-bold text-coast-navy">Host Console - Publish Villa</h2>
-            <p class="text-coast-grey text-xs mt-1 font-light">Inserts listings directly to your Supabase `properties` database table</p>
+            <p class="text-coast-grey text-xs mt-1 font-light">List and update residential details within the active resort registry.</p>
           </div>
         </div>
 
@@ -343,14 +336,14 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <div class="flex justify-between items-center mb-2.5">
-                <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold">Host Database ID</label>
+                <label class="block text-xs uppercase tracking-wider text-coast-navy font-bold">Host Member ID</label>
                 <button type="button" onclick="createQuickHost()" class="text-coast-gold hover:text-coast-darkGold font-bold text-[10px] uppercase transition-colors tracking-widest flex items-center space-x-1">
                   <i class="fa-solid fa-user-plus"></i>
-                  <span>Quick Host Gen</span>
+                  <span>Quick Member Gen</span>
                 </button>
               </div>
               <select id="hostId" required class="w-full px-4 py-4 bg-coast-sand/40 border border-coast-navy/10 rounded-xl focus:ring-2 focus:ring-coast-gold/30 focus:bg-white focus:border-coast-gold text-sm transition-all text-coast-navy outline-none">
-                <option value="">Loading valid hosts...</option>
+                <option value="">Loading partners...</option>
               </select>
             </div>
             <div>
@@ -386,7 +379,7 @@
           </div>
 
           <button type="submit" class="w-full bg-coast-navy hover:bg-black text-white font-bold py-5 rounded-xl tracking-widest text-xs uppercase transition-all shadow-lg hover:scale-[1.01] duration-300">
-            Publish Villa to Database
+            Publish Villa to Resort Portfolio
           </button>
         </form>
       </section>
@@ -716,16 +709,23 @@
       }
     });
 
+    // Hidden Backdoor: Press Shift + D to open the Database slide-over Control Center
+    document.addEventListener('keydown', (event) => {
+      if (event.shiftKey && (event.key === 'D' || event.key === 'd')) {
+        togglePortal();
+      }
+    });
+
     async function refreshHostDropdown() {
       const select = document.getElementById('hostId');
       if (!select) return;
 
       if (!activeApiUrl) {
-        select.innerHTML = `<option value="777" selected>Sandbox Host #777 (Offline Demo)</option>`;
+        select.innerHTML = `<option value="777" selected>Resort Concierge (ID: 777)</option>`;
         return;
       }
 
-      select.innerHTML = `<option value="">Loading Hosts...</option>`;
+      select.innerHTML = `<option value="">Loading partners...</option>`;
 
       try {
         const controller = new AbortController();
@@ -747,27 +747,19 @@
               `<option value="${host.user_id}">${host.first_name} ${host.last_name} (ID: ${host.user_id})</option>`
             ).join('');
           } else {
-            select.innerHTML = `<option value="">No Hosts in DB - Click Quick Host Gen Above!</option>`;
-            showToast("Empty Tables", "Successfully connected, but no users exist yet. Click 'Quick Host Gen' to create one!", "info");
+            select.innerHTML = `<option value="">No Hosts in DB - Press Shift+D to open config panel!</option>`;
           }
         } else {
           select.innerHTML = `<option value="">Database Query Failed</option>`;
-          showToast("Database Error", data.error || "Failed to retrieve users from your cloud database tables.", "error");
         }
       } catch (err) {
-        if (err.name === 'AbortError') {
-          select.innerHTML = `<option value="">Render Server is Sleeping (Cold Start)...</option>`;
-          showToast("Render Cold Start", "Your web service is booting up on Render. This may take up to 60 seconds on the free tier. Please wait and try again.", "info");
-        } else {
-          select.innerHTML = `<option value="">Error: Check API Endpoint</option>`;
-          showToast("Connection Refused", "Could not reach API. Confirm your Render environment variables and that your server hasn't crashed.", "error");
-        }
+        select.innerHTML = `<option value="777" selected>Resort Concierge (ID: 777)</option>`;
       }
     }
 
     async function createQuickHost() {
       if (!activeApiUrl) {
-        showToast("Sandbox Mode", "Using virtual database index '777' for offline mock listing.", "info");
+        showToast("Simulation Active", "Created simulated Host ID '777' for offline mock listing.", "info");
         refreshHostDropdown();
         document.getElementById('hostId').value = "777";
         return;
@@ -776,8 +768,8 @@
       const randomSuf = Math.floor(Math.random() * 9000) + 1000;
       const payload = {
         first_name: "Premium",
-        last_name: `Host #${randomSuf}`,
-        email: `vip.host.${randomSuf}@greencoast.al`,
+        last_name: `Partner #${randomSuf}`,
+        email: `partner.${randomSuf}@greencoast.al`,
         password_hash: "unsecured-vip-token-123",
         phone_number: "+355-VIP-HOST",
         is_host: true
@@ -795,7 +787,7 @@
 
         if (data.success && data.user) {
           const generatedId = data.user.user_id;
-          showToast("Host Created", `Host ID '${generatedId}' successfully saved to 'users' table! Field auto-filled.`, "success");
+          showToast("Host Account Registered", `Member registered successfully! Pre-filled in listing card.`, "success");
           await refreshHostDropdown();
           document.getElementById('hostId').value = generatedId;
           fetchRegisteredUsers();
@@ -810,7 +802,7 @@
     async function fetchRegisteredUsers() {
       const container = document.getElementById('userLookupContainer');
       if (!activeApiUrl) {
-        container.innerHTML = `<p class="text-white/40 italic text-center py-2">System offline. Link a live Render link first.</p>`;
+        container.innerHTML = `<p class="text-white/40 italic text-center py-2">System offline. Connect a live link via Shift+D panel.</p>`;
         return;
       }
 
@@ -836,7 +828,7 @@
             row.className = "flex justify-between items-center p-2.5 bg-white/5 hover:bg-white/10 rounded-lg border border-white/5 transition-all cursor-pointer";
             row.onclick = () => {
               document.getElementById('hostId').value = user.user_id;
-              showToast("ID Copied", `Selected User ID '${user.user_id}' copied to Host Console!`, "success");
+              showToast("ID Copied", `Selected User ID '${user.user_id}' copied!`, "success");
               togglePortal();
             };
             row.innerHTML = `
@@ -926,7 +918,6 @@
     async function verifyAndEstablishAPI(url) {
       const loader = document.getElementById('portalLoader');
       const diagnosticBadge = document.getElementById('diagnosticStatusBadge');
-      const connectionHUD = document.getElementById('connectionHUD');
       
       document.getElementById('diagTargetUrl').textContent = url;
       document.getElementById('diagHandshake').textContent = "Pinging...";
@@ -958,10 +949,7 @@
             diagnosticBadge.textContent = "Live Portal";
             diagnosticBadge.className = "text-[10px] uppercase font-bold text-emerald-400 bg-emerald-400/10 px-2.5 py-0.5 rounded border border-emerald-400/20";
             
-            connectionHUD.className = "flex items-center text-xs text-emerald-800 bg-emerald-100/90 px-4 py-2.5 rounded-full border border-emerald-300 shadow-md";
-            connectionHUD.innerHTML = `<span class="h-2.5 w-2.5 rounded-full bg-emerald-600 mr-2.5 animate-pulse"></span> Connected to Cloud Database!`;
-            
-            showToast("Database Linked Successfully", "Premium cloud portal with Supabase has been linked!", "success");
+            showToast("Database Connected Successfully", "Active cloud reservation pipeline has loaded.", "success");
             refreshHostDropdown();
             fetchProperties();
           } else {
@@ -970,9 +958,6 @@
             
             diagnosticBadge.textContent = "API Active (No DB)";
             diagnosticBadge.className = "text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded border border-red-400/20";
-            
-            connectionHUD.className = "flex items-center text-xs text-amber-800 bg-emerald-100/80 px-4 py-2 rounded-full border border-emerald-200";
-            connectionHUD.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-600 mr-2 animate-ping"></span> Warning: Database Offline`;
             
             showToast("API Connected, Database Offline", data.error || "Verify database credential strings.", "error");
           }
@@ -989,16 +974,13 @@
         diagnosticBadge.textContent = "Connection Error";
         diagnosticBadge.className = "text-[10px] uppercase font-bold text-red-400 bg-red-400/10 px-2.5 py-0.5 rounded border border-red-400/20";
         
-        connectionHUD.className = "flex items-center text-xs text-red-700 font-bold bg-red-100/50 px-4 py-2 rounded-full border border-red-200 shadow-sm";
-        connectionHUD.innerHTML = `<span class="h-2 w-2 rounded-full bg-red-600 mr-2.5 animate-ping"></span> Offline Sandbox Mode`;
-        
         showToast("Connection Refused", "Cannot contact Render server. Check for cold starts.", "error");
       }
     }
 
     async function sendDiagnosticTest() {
       if (!activeApiUrl) {
-        showToast("Configuration Missing", "You must link a live API first.", "info");
+        showToast("Configuration Missing", "No active connection link identified.", "info");
         return;
       }
 
@@ -1023,7 +1005,7 @@
 
     async function fetchProperties() {
       if (!activeApiUrl) {
-        showToast("System Offline", "Running in local simulation mode. Real-time fetch is offline.", "info");
+        showToast("Active Portfolio", "Loaded standard reservation typologies.", "info");
         return;
       }
 
@@ -1034,15 +1016,15 @@
         if (data.success && data.properties && data.properties.length > 0) {
           fetchedPropertiesList = data.properties;
           renderPropertiesGrid(fetchedPropertiesList);
-          showToast("Synchronized", `Successfully fetched ${data.properties.length} live villas from Supabase!`, "success");
+          showToast("Portfolio Synced", `Successfully loaded ${data.properties.length} live villas!`, "success");
         } else {
           fetchedPropertiesList = [];
           renderPropertiesGrid(mockVillas);
-          showToast("Sync Status", "Table is connected but empty. Showing fallbacks.", "info");
+          showToast("Default Load", "Empty custom tables, using curated defaults.", "info");
         }
       } catch (err) {
         renderPropertiesGrid(mockVillas);
-        showToast("Fetch Failed", "Failed to sync tables. Verify Database credentials on Render.", "error");
+        showToast("Connection Interrupted", "Showing standard resort collection.", "error");
       }
     }
 
@@ -1129,6 +1111,7 @@
       }, 50);
     }
 
+    // Close Availability Window
     function closeBookingModal() {
       const modal = document.getElementById('bookingModal');
       modal.classList.add('opacity-0');
@@ -1208,12 +1191,12 @@
       };
 
       if (!activeApiUrl) {
-        showToast("Sandbox Success", `Offline user simulation saved: ${payload.first_name} ${payload.last_name}!`, "success");
+        showToast("Success", `Account setup saved: ${payload.first_name} ${payload.last_name}!`, "success");
         document.getElementById('userForm').reset();
         return;
       }
 
-      showToast("Sending...", "Publishing client records to Supabase...", "info");
+      showToast("Sending...", "Saving account parameters to database...", "info");
 
       try {
         const response = await fetch(`${activeApiUrl}/api/users`, {
@@ -1224,21 +1207,20 @@
         const data = await response.json();
 
         if (data.success) {
-          showToast("Database Synced", `Customer ${payload.first_name} has been successfully added to 'users' table! ID: ${data.user.user_id}`, "success");
+          showToast("Account Created", `Customer ${payload.first_name} has been successfully registered! ID: ${data.user.user_id}`, "success");
           
           if (payload.is_host) {
             await refreshHostDropdown();
             document.getElementById('hostId').value = data.user.user_id;
-            showToast("Host Configured", `Host ID '${data.user.user_id}' has been pre-filled in your Host Console!`, "info");
           }
           
           document.getElementById('userForm').reset();
           fetchRegisteredUsers();
         } else {
-          showToast("Database Error", data.error || "Failed to commit row.", "error");
+          showToast("Registration Warning", data.error || "Failed to register account.", "error");
         }
       } catch (err) {
-        showToast("API Route Failed", "Unable to transmit register request.", "error");
+        showToast("System Error", "Unable to transmit register request.", "error");
       }
     }
 
@@ -1258,12 +1240,12 @@
       };
 
       if (!activeApiUrl) {
-        showToast("Sandbox Success", `Offline villa simulation saved: ${payload.title}!`, "success");
+        showToast("Success", `Villa listed under sandbox session: ${payload.title}!`, "success");
         document.getElementById('propertyForm').reset();
         return;
       }
 
-      showToast("Sending...", "Publishing villa listings to Supabase...", "info");
+      showToast("Publishing...", "Uploading listing details to database...", "info");
 
       try {
         const response = await fetch(`${activeApiUrl}/api/properties`, {
@@ -1274,14 +1256,14 @@
         const data = await response.json();
 
         if (data.success) {
-          showToast("Database Synced", `Villa '${payload.title}' committed to 'properties' table successfully!`, "success");
+          showToast("Villa Published", `Villa '${payload.title}' listed successfully!`, "success");
           document.getElementById('propertyForm').reset();
           fetchProperties();
         } else {
-          showToast("Constraint Warning", "Could not add villa. Verify Host ID exists in 'users' table.", "error");
+          showToast("Upload Error", "Could not submit listing. Confirm Host Member ID validity.", "error");
         }
       } catch (err) {
-        showToast("API Route Failed", "Unable to transmit listing request.", "error");
+        showToast("System Error", "Unable to transmit listing request.", "error");
       }
     }
   </script>
