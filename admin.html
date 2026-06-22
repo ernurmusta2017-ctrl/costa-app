@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COAST | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-serif text-gray-900">Admin Console</h1>
+                <p class="text-gray-600">Managing vacation rental portfolio.</p>
+            </div>
+            <div id="stats" class="flex gap-4">
+                <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm text-center">
+                    <div id="totalCount" class="text-xl font-bold text-gray-900">-</div>
+                    <div class="text-[10px] uppercase text-gray-400 font-bold tracking-wider">Total</div>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm text-center">
+                    <div id="pendingCount" class="text-xl font-bold text-yellow-600">-</div>
+                    <div class="text-[10px] uppercase text-gray-400 font-bold tracking-wider">Pending</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <input type="text" id="searchInput" placeholder="Search properties by title or city..." 
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-coast-navy focus:outline-none"
+                onkeyup="filterProperties()">
+            <button onclick="toggleModal(true)" class="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-black font-semibold">
+                + Add Property
+            </button>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500">Property</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500">Status</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="propertyList" class="divide-y divide-gray-200">
+                    <tr>
+                        <td colspan="3" class="px-6 py-8 text-center text-gray-500">Loading listings...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="addModal" class="hidden fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-xl w-full max-w-lg">
+            <h2 class="text-xl font-bold mb-4">Create New Listing</h2>
+            <form id="propertyForm" class="space-y-4">
+                <input type="text" name="title" placeholder="Villa Title" required class="w-full p-2 border rounded">
+                <input type="text" name="location_city" placeholder="City" required class="w-full p-2 border rounded">
+                <input type="number" name="base_price_per_night" placeholder="Price per Night" required class="w-full p-2 border rounded">
+                <input type="text" name="img" placeholder="Image URL" class="w-full p-2 border rounded">
+                <div class="flex gap-2 justify-end pt-4">
+                    <button type="button" onclick="toggleModal(false)" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
+        let allProperties = [];
+
+        async function fetchProperties() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/properties`);
+                const data = await response.json();
+                allProperties = data.properties;
+                renderTable(allProperties);
+                updateStats(allProperties);
+            } catch (err) { console.error("Error:", err); }
+        }
+
+        function renderTable(props) {
+            const list = document.getElementById('propertyList');
+            list.innerHTML = props.length ? '' : '<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">No properties found.</td></tr>';
+            
+            props.forEach(p => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-gray-900">${p.title}</div>
+                        <div class="text-sm text-gray-500">${p.location_city || 'N/A'}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs rounded-full ${p.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                            ${p.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 flex gap-2">
+                        ${p.status === 'pending' ? `<button onclick="approve(${p.property_id})" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700">Approve</button>` : ''}
+                        <button onclick="deleteProp(${p.property_id})" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700">Delete</button>
+                    </td>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function updateStats(props) {
+            document.getElementById('totalCount').innerText = props.length;
+            document.getElementById('pendingCount').innerText = props.filter(p => p.status === 'pending').length;
+        }
+
+        function filterProperties() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProperties.filter(p => 
+                p.title.toLowerCase().includes(query) || 
+                (p.location_city && p.location_city.toLowerCase().includes(query))
+            );
+            renderTable(filtered);
+        }
+
+        function toggleModal(show) {
+            document.getElementById('addModal').classList.toggle('hidden', !show);
+        }
+
+        document.getElementById('propertyForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data.host_id = 1; // Default to admin host
+            
+            await fetch(`${API_BASE}/api/properties`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            toggleModal(false);
+            fetchProperties();
+        };
+
+        async function approve(id) {
+            await fetch(`${API_BASE}/api/approve-property/${id}`, { method: 'POST' });
+            fetchProperties();
+        }
+
+        async function deleteProp(id) {
+            if(confirm('Are you sure you want to delete this property?')) {
+                await fetch(`${API_BASE}/api/admin/properties/${id}`, { method: 'DELETE' });
+                fetchProperties();
+            }
+        }
+
+        window.onload = fetchProperties;
+    </script>
+</body>
+</html>
