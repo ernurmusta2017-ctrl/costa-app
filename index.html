@@ -16,11 +16,11 @@
         extend: {
           colors: {
             coast: {
-              navy: 'var(--aqua-deep)',      // Maps deep aqua dynamically
-              sand: 'var(--sand-light)',    // Maps soft sand dynamically
-              softWhite: 'var(--white)',    // Maps clean white dynamically
-              grey: 'var(--text-grey)',      // Maps custom grey dynamically
-              gold: '#D4AF37',              // Luxury accent gold
+              navy: '#0a3a3a',
+              sand: '#f7f5f0',
+              softWhite: '#ffffff',
+              grey: '#666666',
+              gold: '#D4AF37',
               darkGold: '#AA820A'
             }
           },
@@ -31,7 +31,6 @@
           animation: {
             'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             'pulse-soft': 'pulseSoft 3s infinite',
-            'glow-pulse': 'glowPulse 2s infinite alternate',
           },
           keyframes: {
             fadeInUp: {
@@ -41,10 +40,6 @@
             pulseSoft: {
               '0%, 100%': { opacity: '1' },
               '50%': { opacity: '0.7' },
-            },
-            glowPulse: {
-              '0%': { boxShadow: '0 0 5px rgba(212, 175, 55, 0.2)' },
-              '100%': { boxShadow: '0 0 20px rgba(212, 175, 55, 0.6)' }
             }
           }
         }
@@ -55,14 +50,6 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght=100;300;400;500;600;700&family=Playfair+Display:ital,wght=0,400..900;1,400..900&display=swap');
     
-    :root {
-      --aqua-deep: #0a3a3a;
-      --sand-light: #f7f5f0;
-      --white: #ffffff;
-      --text-grey: #666666;
-      --overlay: rgba(10, 58, 58, 0.82);
-    }
-
     body {
       font-family: 'Montserrat', sans-serif;
       scroll-behavior: smooth;
@@ -74,25 +61,21 @@
       width: 10px;
     }
     ::-webkit-scrollbar-track {
-      background: var(--sand-light);
+      background: #f7f5f0;
     }
     ::-webkit-scrollbar-thumb {
-      background: var(--aqua-deep);
+      background: #0a3a3a;
       border-radius: 5px;
-      border: 2px solid var(--sand-light);
+      border: 2px solid #f7f5f0;
     }
+    /* Multi-layered premium text shadow to ensure perfect contrast on bright images */
     .text-shadow-premium {
-      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.65), 0 2px 4px rgba(0, 0, 0, 0.45);
     }
     .glass-premium {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-    }
-    .glass-dark-premium {
-      background: rgba(10, 58, 58, 0.9);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
     }
   </style>
 </head>
@@ -115,8 +98,8 @@
     </div>
     
     <!-- Preserved for system triggers (Hidden visually) -->
-    <div class="hidden flex items-center space-x-4">
-      <button onclick="togglePortal()" id="dbCenterToggler" class="hidden"></button>
+    <div class="hidden">
+      <button onclick="togglePortal()" id="dbCenterToggler"></button>
     </div>
   </div>
 
@@ -138,23 +121,27 @@
       <a href="#host" class="hover:text-coast-gold transition-colors relative after:absolute after:bottom-[-6px] after:left-0 after:w-0 after:h-[2px] after:bg-coast-gold hover:after:w-full after:transition-all after:duration-300">Host Console</a>
       <a href="#faq" class="hover:text-coast-gold transition-colors relative after:absolute after:bottom-[-6px] after:left-0 after:w-0 after:h-[2px] after:bg-coast-gold hover:after:w-full after:transition-all after:duration-300">FAQ</a>
     </div>
-
-    <!-- Technical HUD elements hidden to maintain direct client luxury experience -->
-    <span id="connectionHUD" class="hidden"></span>
   </nav>
+
+  <!-- TECHNICAL INDICATORS HIDDEN BY DEFAULT (To trigger DB slide-over press Shift + D) -->
+  <span id="connectionHUD" class="hidden"></span>
 
   <!-- HERO SECTION -->
   <header class="relative bg-coast-navy text-white py-36 md:py-48 px-4 md:px-8 text-center overflow-hidden min-h-[92vh] flex items-center justify-center">
-    <div class="absolute inset-0 bg-[url('https://images.hellomagazine.com/horizon/landscape/2990818e72d8-green-coastalbaniamgallery-collection3.jpg')] bg-cover bg-center opacity-45 transform scale-100 transition-transform duration-[10s] hover:scale-105"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-coast-navy via-coast-navy/70 to-transparent"></div>
+    <!-- Backdrop photo is bright, visible, and realistic (90% Opacity) -->
+    <div class="absolute inset-0 bg-[url('https://images.hellomagazine.com/horizon/landscape/2990818e72d8-green-coastalbaniamgallery-collection3.jpg')] bg-cover bg-center opacity-90 transform scale-100 transition-transform duration-[10s] hover:scale-105"></div>
+    
+    <!-- Lightened radial overlay: keeps the center fully bright while softly shading the edges for contrast -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/35"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(10,58,58,0.45)_90%)]"></div>
     
     <div class="relative z-10 max-w-5xl mx-auto animate-fade-in-up">
-      <span class="text-coast-gold uppercase tracking-[0.5em] text-xs font-bold block mb-5 bg-black/25 backdrop-blur-sm w-fit mx-auto px-4 py-1.5 rounded-full border border-coast-gold/20">Elite Green Coast Resort • Palasë</span>
+      <span class="text-coast-gold uppercase tracking-[0.5em] text-xs font-bold block mb-5 bg-black/40 backdrop-blur-md w-fit mx-auto px-4 py-1.5 rounded-full border border-coast-gold/20">Elite Green Coast Resort • Palasë</span>
       <h1 class="text-4xl md:text-7xl lg:text-8xl font-normal mb-8 leading-none tracking-tight text-shadow-premium">
         Luxury Villa Rentals <br>
         <span class="serif-font italic font-light text-coast-gold">at Green Coast</span>
       </h1>
-      <p class="text-white/90 text-sm md:text-lg max-w-3xl mx-auto mb-14 font-light leading-relaxed tracking-wide">
+      <p class="text-white text-sm md:text-lg max-w-3xl mx-auto mb-14 font-medium leading-relaxed tracking-wide text-shadow-premium">
         Access the most prestigious frontline residences in Palasë, fully managed with five-star hospitality.
       </p>
       
@@ -233,7 +220,7 @@
 
       <!-- Live properties grid -->
       <div id="propertiesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-        <!-- Dynmically loaded properties populated from JS -->
+        <!-- Dynamically loaded properties populated from JS -->
       </div>
     </section>
 
@@ -459,7 +446,7 @@
 
   </main>
 
-  <!-- DATABASE SLIDE-OVER CONTROL PANEL -->
+  <!-- DATABASE SLIDE-OVER CONTROL PANEL (SECRET BACKDOOR ACCESSED VIA SHIFT + D) -->
   <div id="databasePortal" class="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-coast-navy text-white shadow-2xl border-l border-white/10 p-8 transform translate-x-full transition-transform duration-500 flex flex-col justify-between overflow-y-auto">
     <div>
       <div class="flex justify-between items-center border-b border-white/10 pb-5 mb-6">
@@ -951,7 +938,6 @@
             diagnosticBadge.textContent = "Live Portal";
             diagnosticBadge.className = "text-[10px] uppercase font-bold text-emerald-400 bg-emerald-400/10 px-2.5 py-0.5 rounded border border-emerald-400/20";
             
-            showToast("Database Connected Successfully", "Active cloud reservation pipeline has loaded.", "success");
             refreshHostDropdown();
             fetchProperties();
           } else {
@@ -960,8 +946,6 @@
             
             diagnosticBadge.textContent = "API Active (No DB)";
             diagnosticBadge.className = "text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded border border-red-400/20";
-            
-            showToast("API Connected, Database Offline", data.error || "Verify database credential strings.", "error");
           }
         } else {
           throw new Error("Invalid response schema from API");
@@ -975,8 +959,6 @@
         
         diagnosticBadge.textContent = "Connection Error";
         diagnosticBadge.className = "text-[10px] uppercase font-bold text-red-400 bg-red-400/10 px-2.5 py-0.5 rounded border border-red-400/20";
-        
-        showToast("Connection Refused", "Cannot contact Render server. Check for cold starts.", "error");
       }
     }
 
@@ -1007,7 +989,6 @@
 
     async function fetchProperties() {
       if (!activeApiUrl) {
-        showToast("Active Portfolio", "Loaded standard reservation typologies.", "info");
         return;
       }
 
@@ -1018,15 +999,12 @@
         if (data.success && data.properties && data.properties.length > 0) {
           fetchedPropertiesList = data.properties;
           renderPropertiesGrid(fetchedPropertiesList);
-          showToast("Portfolio Synced", `Successfully loaded ${data.properties.length} live villas!`, "success");
         } else {
           fetchedPropertiesList = [];
           renderPropertiesGrid(mockVillas);
-          showToast("Default Load", "Empty custom tables, using curated defaults.", "info");
         }
       } catch (err) {
         renderPropertiesGrid(mockVillas);
-        showToast("Connection Interrupted", "Showing standard resort collection.", "error");
       }
     }
 

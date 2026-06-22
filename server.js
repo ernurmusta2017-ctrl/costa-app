@@ -70,37 +70,71 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// --- 3. GET ALL VILLAS ---
+// --- 3. GET APPROVED VILLAS ---
 app.get('/api/properties', async (req, res) => {
   try {
-    const query = 'SELECT * FROM properties ORDER BY property_id DESC;';
+    // Only fetch approved properties
+    const query = "SELECT * FROM properties WHERE status = 'approved' ORDER BY property_id DESC;";
     const result = await pool.query(query);
     res.status(200).json({ success: true, properties: result.rows });
   } catch (error) {
-    console.error("Fetch Properties Error:", error.message);
     res.status(500).json({ success: false, error: "Failed to retrieve properties." });
   }
 });
 
-// --- 4. UPLOAD A NEW VILLA ---
+// --- 4. UPLOAD NEW VILLA (AS PENDING) ---
 app.post('/api/properties', async (req, res) => {
   const { host_id, title, description, location_city, location_country, max_guests, base_price_per_night, img } = req.body;
   try {
+    // Force status to 'pending'
     const query = `
-      INSERT INTO properties (host_id, title, description, location_city, location_country, max_guests, base_price_per_night, img)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO properties (host_id, title, description, location_city, location_country, max_guests, base_price_per_night, img, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending')
       RETURNING *;
     `;
     const values = [host_id, title, description, location_city, location_country, max_guests, base_price_per_night, img];
     const result = await pool.query(query, values);
     res.status(201).json({ success: true, property: result.rows[0] });
   } catch (error) {
-    console.error("Villa Listing Error:", error.message);
     res.status(500).json({ success: false, error: "Failed to create property listing." });
   }
 });
 
-// --- 5. HEALTH CHECK ROOT ---
+// --- 5. APPROVE PENDING VILLA (ADMIN ONLY) ---
+app.post('/api/approve-property/:id', async (req, res) => {
+  try {
+    await pool.query("UPDATE properties SET status = 'approved' WHERE property_id = $1", [req.params.id]);
+    res.status(200).json({ success: true, message: `Property ${req.params.id} approved!` });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Approval failed." });
+  }
+});
+
+// --- ADMIN ROUTES (DASHBOARD FUNCTIONALITY) ---
+
+
+// Fetch ALL properties (including pending for dashboard review)
+app.get('/api/admin/properties', async (req, res) => {
+  try {
+    const query = "SELECT * FROM properties ORDER BY created_at DESC;";
+    const result = await pool.query(query);
+    res.status(200).json({ success: true, properties: result.rows });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to retrieve admin properties." });
+  }
+});
+
+// Delete any property listing
+app.delete('/api/admin/properties/:id', async (req, res) => {
+  try {
+    await pool.query("DELETE FROM properties WHERE property_id = $1", [req.params.id]);
+    res.status(200).json({ success: true, message: `Property ${req.params.id} deleted successfully.` });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Deletion failed." });
+  }
+});
+
+// --- 6. HEALTH CHECK ROOT ---
 app.get('/', async (req, res) => {
   try {
     await pool.query('SELECT NOW()');
