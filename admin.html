@@ -3,143 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COAST | Admin Dashboard</title>
+    <title>COAST | Admin Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+<body class="bg-slate-50 min-h-screen">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <!-- Sidebar Navigation -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-slate-900 text-white p-6 hidden md:flex flex-col">
+        <div class="mb-10">
+            <h1 class="text-2xl font-serif text-amber-500">COAST</h1>
+            <p class="text-slate-400 text-xs tracking-widest uppercase">Admin Command</p>
+        </div>
+        <nav class="space-y-4 flex-grow">
+            <button onclick="switchView('dashboard')" class="block w-full text-left p-2 hover:bg-slate-800 rounded">Dashboard</button>
+            <button onclick="switchView('properties')" class="block w-full text-left p-2 hover:bg-slate-800 rounded">Portfolio</button>
+            <button onclick="switchView('users')" class="block w-full text-left p-2 hover:bg-slate-800 rounded">User Registry</button>
+        </nav>
+        <div class="border-t border-slate-700 pt-4">
+            <select id="roleSwitcher" onchange="changeRole(this.value)" class="bg-slate-800 w-full p-2 rounded text-sm">
+                <option value="super_admin">Role: Super Admin</option>
+                <option value="admin_host">Role: Admin Host</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="md:ml-64 p-8">
+        <header class="flex justify-between items-end mb-8">
             <div>
-                <h1 class="text-3xl font-serif text-gray-900">Admin Console</h1>
-                <p class="text-gray-600">Managing vacation rental portfolio.</p>
+                <h2 id="viewTitle" class="text-3xl font-serif">Portfolio Overview</h2>
+                <p id="viewDesc" class="text-slate-500">Managing luxury rental inventory.</p>
             </div>
-            <div id="stats" class="flex gap-4">
-                <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm text-center">
-                    <div id="totalCount" class="text-xl font-bold text-gray-900">-</div>
-                    <div class="text-[10px] uppercase text-gray-400 font-bold tracking-wider">Total</div>
-                </div>
-                <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm text-center">
-                    <div id="pendingCount" class="text-xl font-bold text-yellow-600">-</div>
-                    <div class="text-[10px] uppercase text-gray-400 font-bold tracking-wider">Pending</div>
-                </div>
-            </div>
+            <button onclick="console.log('Open Add Modal')" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                + New Listing
+            </button>
         </header>
 
-        <div class="flex flex-col md:flex-row gap-4 mb-6">
-            <input type="text" id="searchInput" placeholder="Search properties by title or city..." 
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-coast-navy focus:outline-none"
-                onkeyup="filterProperties()">
-            <button onclick="toggleModal(true)" class="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-black font-semibold">
-                + Add Property
-            </button>
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Total Listings</div>
+                <div id="totalCount" class="text-3xl font-semibold">-</div>
+            </div>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Pending Approval</div>
+                <div id="pendingCount" class="text-3xl font-semibold text-amber-600">-</div>
+            </div>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Active Revenue</div>
+                <div id="revenueVal" class="text-3xl font-semibold text-emerald-600">$0</div>
+            </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <!-- Data Table -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <table class="w-full text-left">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-slate-50 border-b border-slate-100">
                     <tr>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500">Property</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500">Status</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500">Actions</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Property</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Price/Night</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Status</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Action</th>
                     </tr>
                 </thead>
-                <tbody id="propertyList" class="divide-y divide-gray-200">
-                    <tr>
-                        <td colspan="3" class="px-6 py-8 text-center text-gray-500">Loading listings...</td>
-                    </tr>
+                <tbody id="propertyList" class="divide-y divide-slate-100">
+                    <tr><td colspan="4" class="p-8 text-center text-slate-400">Syncing database...</td></tr>
                 </tbody>
             </table>
         </div>
-    </div>
-
-    <div id="addModal" class="hidden fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white p-6 rounded-xl w-full max-w-lg">
-            <h2 class="text-xl font-bold mb-4">Create New Listing</h2>
-            <form id="propertyForm" class="space-y-4">
-                <input type="text" name="title" placeholder="Villa Title" required class="w-full p-2 border rounded">
-                <input type="text" name="location_city" placeholder="City" required class="w-full p-2 border rounded">
-                <input type="number" name="base_price_per_night" placeholder="Price per Night" required class="w-full p-2 border rounded">
-                <input type="text" name="img" placeholder="Image URL" class="w-full p-2 border rounded">
-                <div class="flex gap-2 justify-end pt-4">
-                    <button type="button" onclick="toggleModal(false)" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Create</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    </main>
 
     <script>
         const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
         let allProperties = [];
+        let currentRole = 'super_admin';
+
+        function switchView(view) {
+            console.log("Switching view to:", view);
+            document.getElementById('viewTitle').innerText = view.charAt(0).toUpperCase() + view.slice(1);
+        }
 
         async function fetchProperties() {
             try {
-                const response = await fetch(`${API_BASE}/api/admin/properties`);
-                const data = await response.json();
+                const res = await fetch(`${API_BASE}/api/admin/properties`);
+                const data = await res.json();
                 allProperties = data.properties;
                 renderTable(allProperties);
-                updateStats(allProperties);
-            } catch (err) { console.error("Error:", err); }
+            } catch (err) { console.error("Sync Error:", err); }
         }
 
         function renderTable(props) {
             const list = document.getElementById('propertyList');
-            list.innerHTML = props.length ? '' : '<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">No properties found.</td></tr>';
-            
-            props.forEach(p => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
+            const total = props.reduce((sum, p) => sum + parseFloat(p.base_price_per_night || 0), 0);
+            document.getElementById('totalCount').innerText = props.length;
+            document.getElementById('pendingCount').innerText = props.filter(p => p.status === 'pending').length;
+            document.getElementById('revenueVal').innerText = `$${total.toLocaleString()}`;
+
+            list.innerHTML = props.map(p => `
+                <tr class="hover:bg-slate-50 transition">
                     <td class="px-6 py-4">
-                        <div class="font-bold text-gray-900">${p.title}</div>
-                        <div class="text-sm text-gray-500">${p.location_city || 'N/A'}</div>
+                        <div class="font-semibold text-slate-900">${p.title}</div>
+                        <div class="text-xs text-slate-400">${p.location_city || 'N/A'}</div>
                     </td>
+                    <td class="px-6 py-4">$${p.base_price_per_night}</td>
                     <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs rounded-full ${p.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                        <span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${p.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
                             ${p.status}
                         </span>
                     </td>
                     <td class="px-6 py-4 flex gap-2">
-                        ${p.status === 'pending' ? `<button onclick="approve(${p.property_id})" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700">Approve</button>` : ''}
-                        <button onclick="deleteProp(${p.property_id})" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700">Delete</button>
+                        ${currentRole === 'super_admin' && p.status === 'pending' ? 
+                            `<button onclick="approve(${p.property_id})" class="text-[10px] uppercase font-bold bg-emerald-600 text-white px-3 py-1 rounded shadow-sm hover:bg-emerald-700">Approve</button>` : ''}
+                        <button onclick="deleteProp(${p.property_id})" class="text-[10px] uppercase font-bold bg-slate-200 text-slate-700 px-3 py-1 rounded hover:bg-slate-300">Delete</button>
                     </td>
-                `;
-                list.appendChild(row);
-            });
+                </tr>
+            `).join('');
         }
 
-        function updateStats(props) {
-            document.getElementById('totalCount').innerText = props.length;
-            document.getElementById('pendingCount').innerText = props.filter(p => p.status === 'pending').length;
+        function changeRole(role) {
+            currentRole = role;
+            renderTable(allProperties);
+            document.getElementById('viewTitle').innerText = role === 'super_admin' ? 'Super Admin Overview' : 'Host Portal';
         }
-
-        function filterProperties() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allProperties.filter(p => 
-                p.title.toLowerCase().includes(query) || 
-                (p.location_city && p.location_city.toLowerCase().includes(query))
-            );
-            renderTable(filtered);
-        }
-
-        function toggleModal(show) {
-            document.getElementById('addModal').classList.toggle('hidden', !show);
-        }
-
-        document.getElementById('propertyForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            data.host_id = 1; // Default to admin host
-            
-            await fetch(`${API_BASE}/api/properties`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            toggleModal(false);
-            fetchProperties();
-        };
 
         async function approve(id) {
             await fetch(`${API_BASE}/api/approve-property/${id}`, { method: 'POST' });
@@ -147,7 +137,7 @@
         }
 
         async function deleteProp(id) {
-            if(confirm('Are you sure you want to delete this property?')) {
+            if(confirm('Delete this listing permanently?')) {
                 await fetch(`${API_BASE}/api/admin/properties/${id}`, { method: 'DELETE' });
                 fetchProperties();
             }
