@@ -3,147 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COAST | Admin Command Center</title>
+    <title>COAST | Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .font-serif { font-family: 'Playfair Display', serif; }
+        .tab-content { display: none; }
+        .tab-active { display: block; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen flex">
 
-    <!-- Sidebar Navigation -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-slate-900 text-white p-6 hidden md:flex flex-col">
-        <div class="mb-10">
-            <h1 class="text-2xl font-serif text-amber-500">COAST</h1>
-            <p class="text-slate-400 text-xs tracking-widest uppercase">Admin Command</p>
-        </div>
-        <nav class="space-y-4 flex-grow">
-            <button onclick="switchView('dashboard')" class="block w-full text-left p-2 hover:bg-slate-800 rounded">Dashboard</button>
-            <button onclick="switchView('properties')" class="block w-full text-left p-2 hover:bg-slate-800 rounded">Portfolio</button>
-            <button onclick="switchView('users')" class="block w-full text-left p-2 hover:bg-slate-800 rounded">User Registry</button>
+    <aside class="w-64 bg-slate-900 text-white p-6">
+        <h1 class="text-2xl font-bold text-amber-500 mb-8">COAST</h1>
+        <nav class="space-y-2">
+            <button onclick="switchView('host')" class="w-full text-left p-2 hover:bg-slate-800 rounded">Host Portal</button>
+            <button onclick="switchView('admin')" class="w-full text-left p-2 hover:bg-slate-800 rounded">Admin Console</button>
         </nav>
-        <div class="border-t border-slate-700 pt-4">
-            <select id="roleSwitcher" onchange="changeRole(this.value)" class="bg-slate-800 w-full p-2 rounded text-sm">
-                <option value="super_admin">Role: Super Admin</option>
-                <option value="admin_host">Role: Admin Host</option>
-            </select>
-        </div>
-    </div>
+    </aside>
 
-    <!-- Main Content -->
-    <main class="md:ml-64 p-8">
-        <header class="flex justify-between items-end mb-8">
-            <div>
-                <h2 id="viewTitle" class="text-3xl font-serif">Portfolio Overview</h2>
-                <p id="viewDesc" class="text-slate-500">Managing luxury rental inventory.</p>
-            </div>
-            <button onclick="console.log('Open Add Modal')" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg font-semibold transition">
-                + New Listing
-            </button>
-        </header>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Total Listings</div>
-                <div id="totalCount" class="text-3xl font-semibold">-</div>
-            </div>
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Pending Approval</div>
-                <div id="pendingCount" class="text-3xl font-semibold text-amber-600">-</div>
-            </div>
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Active Revenue</div>
-                <div id="revenueVal" class="text-3xl font-semibold text-emerald-600">$0</div>
-            </div>
+    <main class="flex-1 p-8">
+        <div id="view-host" class="tab-content tab-active">
+            <h2 class="text-2xl font-bold mb-6">Host Portal</h2>
+            <div id="hostGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </div>
 
-        <!-- Data Table -->
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-slate-50 border-b border-slate-100">
-                    <tr>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Property</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Price/Night</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Status</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="propertyList" class="divide-y divide-slate-100">
-                    <tr><td colspan="4" class="p-8 text-center text-slate-400">Syncing database...</td></tr>
-                </tbody>
-            </table>
+        <div id="view-admin" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6">Admin Console</h2>
+            <div id="adminGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </div>
     </main>
 
     <script>
         const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
-        let allProperties = [];
-        let currentRole = 'super_admin';
+        
+        async function fetchProperties() {
+            const res = await fetch(`${API_BASE}/api/admin/properties`);
+            const data = await res.json();
+            render(data.properties || []);
+        }
 
         function switchView(view) {
-            console.log("Switching view to:", view);
-            document.getElementById('viewTitle').innerText = view.charAt(0).toUpperCase() + view.slice(1);
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('tab-active'));
+            document.getElementById(`view-${view}`).classList.add('tab-active');
         }
 
-        async function fetchProperties() {
-            try {
-                const res = await fetch(`${API_BASE}/api/admin/properties`);
-                const data = await res.json();
-                allProperties = data.properties;
-                renderTable(allProperties);
-            } catch (err) { console.error("Sync Error:", err); }
+        async function updateStatus(id, action) {
+            const res = await fetch(`${API_BASE}/api/admin/properties/${id}/${action}`, { method: 'POST' });
+            if (res.ok) fetchProperties();
+            else alert("Update failed!");
         }
 
-        function renderTable(props) {
-            const list = document.getElementById('propertyList');
-            const total = props.reduce((sum, p) => sum + parseFloat(p.base_price_per_night || 0), 0);
-            document.getElementById('totalCount').innerText = props.length;
-            document.getElementById('pendingCount').innerText = props.filter(p => p.status === 'pending').length;
-            document.getElementById('revenueVal').innerText = `$${total.toLocaleString()}`;
+        function render(props) {
+            document.getElementById('hostGrid').innerHTML = props.filter(p => p.host_id === 1).map(p => `
+                <div class="bg-white p-4 rounded border shadow-sm">
+                    <h3 class="font-bold">${p.title}</h3>
+                    <p class="text-xs font-bold ${p.status === 'approved' ? 'text-green-600' : 'text-red-600'}">${p.status}</p>
+                </div>`).join('');
 
-            list.innerHTML = props.map(p => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="px-6 py-4">
-                        <div class="font-semibold text-slate-900">${p.title}</div>
-                        <div class="text-xs text-slate-400">${p.location_city || 'N/A'}</div>
-                    </td>
-                    <td class="px-6 py-4">$${p.base_price_per_night}</td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${p.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                            ${p.status}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 flex gap-2">
-                        ${currentRole === 'super_admin' && p.status === 'pending' ? 
-                            `<button onclick="approve(${p.property_id})" class="text-[10px] uppercase font-bold bg-emerald-600 text-white px-3 py-1 rounded shadow-sm hover:bg-emerald-700">Approve</button>` : ''}
-                        <button onclick="deleteProp(${p.property_id})" class="text-[10px] uppercase font-bold bg-slate-200 text-slate-700 px-3 py-1 rounded hover:bg-slate-300">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
+            document.getElementById('adminGrid').innerHTML = props.map(p => `
+                <div class="bg-white p-4 rounded border shadow-sm">
+                    <h3 class="font-bold mb-2">${p.title}</h3>
+                    <div class="flex gap-2">
+                        <button onclick="updateStatus(${p.property_id}, 'approve')" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Approve</button>
+                        <button onclick="updateStatus(${p.property_id}, 'reject')" class="bg-red-600 text-white px-2 py-1 rounded text-xs">Reject</button>
+                    </div>
+                </div>`).join('');
         }
 
-        function changeRole(role) {
-            currentRole = role;
-            renderTable(allProperties);
-            document.getElementById('viewTitle').innerText = role === 'super_admin' ? 'Super Admin Overview' : 'Host Portal';
-        }
-
-        async function approve(id) {
-            await fetch(`${API_BASE}/api/approve-property/${id}`, { method: 'POST' });
-            fetchProperties();
-        }
-
-        async function deleteProp(id) {
-            if(confirm('Delete this listing permanently?')) {
-                await fetch(`${API_BASE}/api/admin/properties/${id}`, { method: 'DELETE' });
-                fetchProperties();
-            }
-        }
-
-        window.onload = fetchProperties;
+        fetchProperties();
     </script>
 </body>
 </html>

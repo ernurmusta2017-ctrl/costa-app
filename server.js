@@ -22,37 +22,23 @@ app.get('/api/admin/properties', async (req, res) => {
   }
 });
 
-// Update an existing property
-app.put('/api/admin/properties/:id', async (req, res) => {
-  const { title, base_price_per_night, description } = req.body;
-  try {
-    await pool.query(
-      `UPDATE properties SET title = $1, base_price_per_night = $2, description = $3 WHERE property_id = $4`,
-      [title, base_price_per_night, description, req.params.id]
-    );
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: "Update failed." });
-  }
-});
-
-// Delete a property
-app.delete('/api/admin/properties/:id', async (req, res) => {
-  try {
-    await pool.query('DELETE FROM properties WHERE property_id = $1', [req.params.id]);
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: "Delete failed." });
-  }
-});
-
-// NEW: Approval endpoint
+// Approve Property
 app.post('/api/admin/properties/:id/approve', async (req, res) => {
   try {
     await pool.query("UPDATE properties SET status = 'approved' WHERE property_id = $1", [req.params.id]);
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: "Approval failed." });
+  }
+});
+
+// Reject Property
+app.post('/api/admin/properties/:id/reject', async (req, res) => {
+  try {
+    await pool.query("UPDATE properties SET status = 'rejected' WHERE property_id = $1", [req.params.id]);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Rejection failed." });
   }
 });
 
