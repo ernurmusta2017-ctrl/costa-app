@@ -42,5 +42,25 @@ app.post('/api/admin/properties/:id/reject', async (req, res) => {
   }
 });
 
+// Login Route
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const result = await pool.query(
+      "SELECT user_id, is_host FROM users WHERE email = $1 AND password_hash = $2", 
+      [email, password]
+    );
+    
+    if (result.rows.length > 0) {
+      res.json({ success: true, user: result.rows[0] });
+    } else {
+      res.status(401).json({ success: false, message: "Invalid credentials." });
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ success: false, error: "Database error." });
+  }
+});
+
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
