@@ -14,7 +14,96 @@
     }
 
     function switchView(view) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('tab-active'));
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('tab-active'));<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COAST | Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tab-content { display: none; }
+        .tab-active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex">
+
+    <aside class="w-64 bg-slate-900 text-white p-6">
+        <h1 class="text-2xl font-bold text-amber-500 mb-8">COAST</h1>
+        <nav class="space-y-2">
+            <button onclick="switchView('host')" class="w-full text-left p-2 hover:bg-slate-800 rounded">Host Portal</button>
+            <button onclick="switchView('admin')" class="w-full text-left p-2 hover:bg-slate-800 rounded">Admin Console</button>
+            <button onclick="logout()" class="w-full text-left p-2 mt-10 text-red-400 hover:bg-slate-800 rounded">Logout</button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+        <div id="view-host" class="tab-content tab-active">
+            <h2 class="text-2xl font-bold mb-6">Host Portal</h2>
+            <div id="hostGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        </div>
+
+        <div id="view-admin" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6">Admin Console</h2>
+            <div id="adminGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
+        
+        // 1. Security Check: Redirect if not logged in
+        const hostId = localStorage.getItem('host_id');
+        if (!hostId) {
+            window.location.href = 'index.html';
+        }
+
+        async function fetchProperties() {
+            const res = await fetch(`${API_BASE}/api/admin/properties`);
+            const data = await res.json();
+            render(data.properties || []);
+        }
+
+        function switchView(view) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('tab-active'));
+            document.getElementById(`view-${view}`).classList.add('tab-active');
+        }
+
+        async function updateStatus(id, action) {
+            const res = await fetch(`${API_BASE}/api/admin/properties/${id}/${action}`, { method: 'POST' });
+            if (res.ok) fetchProperties();
+            else alert("Update failed!");
+        }
+
+        function logout() {
+            localStorage.removeItem('host_id');
+            window.location.href = 'index.html';
+        }
+
+        function render(props) {
+            // 2. Dynamic Filtering: Use the actual logged-in hostId
+            document.getElementById('hostGrid').innerHTML = props
+                .filter(p => p.host_id == hostId) 
+                .map(p => `
+                    <div class="bg-white p-4 rounded border shadow-sm">
+                        <h3 class="font-bold">${p.title}</h3>
+                        <p class="text-xs font-bold ${p.status === 'approved' ? 'text-green-600' : 'text-red-600'}">${p.status}</p>
+                    </div>`).join('');
+
+            document.getElementById('adminGrid').innerHTML = props.map(p => `
+                <div class="bg-white p-4 rounded border shadow-sm">
+                    <h3 class="font-bold mb-2">${p.title}</h3>
+                    <div class="flex gap-2">
+                        <button onclick="updateStatus(${p.property_id}, 'approve')" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Approve</button>
+                        <button onclick="updateStatus(${p.property_id}, 'reject')" class="bg-red-600 text-white px-2 py-1 rounded text-xs">Reject</button>
+                    </div>
+                </div>`).join('');
+        }
+
+        fetchProperties();
+    </script>
+</body>
+</html>
         document.getElementById(`view-${view}`).classList.add('tab-active');
     }
 
