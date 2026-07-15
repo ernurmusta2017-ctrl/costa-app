@@ -22,13 +22,13 @@ app.get('/api/admin/properties', async (req, res) => {
   }
 });
 
-// 2. Add Property - UPDATED to match your DB columns
+// 2. Add Property (Status column removed)
 app.post('/api/admin/properties/add', async (req, res) => {
   const { title, price, host_id, location, guests, image_url, description } = req.body;
   try {
     const query = `
-      INSERT INTO properties (title, base_price_per_night, host_id, location_city, max_guests, image_url, description, status) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending') 
+      INSERT INTO properties (title, base_price_per_night, host_id, location_city, max_guests, image_url, description) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7) 
       RETURNING *`;
     const values = [title, price, host_id, location, guests, image_url, description];
     
@@ -40,7 +40,7 @@ app.post('/api/admin/properties/add', async (req, res) => {
   }
 });
 
-// 3. Update Property
+// 3. Update Property (Status column removed)
 app.put('/api/admin/properties/:id', async (req, res) => {
   const { title, price, location, guests, image_url, description } = req.body;
   try {
@@ -55,23 +55,14 @@ app.put('/api/admin/properties/:id', async (req, res) => {
   }
 });
 
-// 4. Status Management
+// 4. Status Management (Note: These will fail if no status column exists in DB)
+// If you do not have a 'status' column in your database, please remove these two routes.
 app.post('/api/admin/properties/:id/approve', async (req, res) => {
-  try {
-    await pool.query("UPDATE properties SET status = 'approved' WHERE property_id = $1", [req.params.id]);
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: "Approval failed." });
-  }
+    res.status(400).json({ error: "Status column does not exist in database." });
 });
 
 app.post('/api/admin/properties/:id/reject', async (req, res) => {
-  try {
-    await pool.query("UPDATE properties SET status = 'rejected' WHERE property_id = $1", [req.params.id]);
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: "Rejection failed." });
-  }
+    res.status(400).json({ error: "Status column does not exist in database." });
 });
 
 // 5. Auth Login
