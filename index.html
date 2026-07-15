@@ -10,6 +10,33 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
+<script>
+    // Update this line with your specific URL
+    const activeApiUrl = 'https://coast-luxury-villas-backend.onrender.com'; 
+
+    async function handleLogin() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPass').value;
+        
+        try {
+            const response = await fetch(`${activeApiUrl}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                localStorage.setItem('host_id', data.user.user_id);
+                window.location.href = 'admin.html';
+            } else {
+                alert("Login failed: " + data.message);
+            }
+        } catch (err) {
+            alert("System error. Ensure backend is live.");
+        }
+    }
+</script>
   <script>
     tailwind.config = {
       theme: {
@@ -121,7 +148,10 @@
       <a href="#host" class="hover:text-coast-gold transition-colors relative after:absolute after:bottom-[-6px] after:left-0 after:w-0 after:h-[2px] after:bg-coast-gold hover:after:w-full after:transition-all after:duration-300">Host Console</a>
       <a href="#faq" class="hover:text-coast-gold transition-colors relative after:absolute after:bottom-[-6px] after:left-0 after:w-0 after:h-[2px] after:bg-coast-gold hover:after:w-full after:transition-all after:duration-300">FAQ</a>
     </div>
-  </nav>
+  </nav><button onclick="document.getElementById('login-modal').classList.remove('hidden')" 
+        class="hover:text-coast-gold transition-colors font-bold uppercase tracking-widest text-xs">
+    Host Login
+</button>
 
   <!-- TECHNICAL INDICATORS HIDDEN BY DEFAULT (To trigger DB slide-over press Shift + D) -->
   <span id="connectionHUD" class="hidden"></span>
@@ -1247,6 +1277,14 @@
       }
     }
   </script>
-
+  <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div class="bg-white p-8 rounded-[2rem] w-full max-w-sm shadow-2xl">
+        <h2 class="text-xl font-bold mb-6 text-coast-navy">Host Login</h2>
+        <input type="email" id="loginEmail" placeholder="Email" class="w-full mb-4 p-3 border rounded-xl text-sm">
+        <input type="password" id="loginPass" placeholder="Password" class="w-full mb-6 p-3 border rounded-xl text-sm">
+        <button onclick="handleLogin()" class="w-full bg-coast-navy text-white py-3 rounded-xl font-bold uppercase text-xs tracking-widest">Login</button>
+        <button onclick="document.getElementById('login-modal').classList.add('hidden')" class="w-full mt-3 text-coast-grey text-xs">Cancel</button>
+    </div>
+</div>
 </body>
 </html>
