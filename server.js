@@ -22,15 +22,16 @@ app.get('/api/admin/properties', async (req, res) => {
   }
 });
 
-// 2. Add Property (Status column removed)
+// 2. Add Property - Updated for schema requirements
 app.post('/api/admin/properties/add', async (req, res) => {
-  const { title, price, host_id, location, guests, image_url, description } = req.body;
+  // Added location_country to match required schema fields
+  const { title, price, host_id, location_city, location_country, guests, image_url, description } = req.body;
   try {
     const query = `
-      INSERT INTO properties (title, base_price_per_night, host_id, location_city, max_guests, image_url, description) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7) 
+      INSERT INTO properties (title, base_price_per_night, host_id, location_city, location_country, max_guests, image_url, description) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
       RETURNING *`;
-    const values = [title, price, host_id, location, guests, image_url, description];
+    const values = [title, price, host_id, location_city, location_country, guests, image_url, description];
     
     const result = await pool.query(query, values);
     res.json({ success: true, property: result.rows[0] });
@@ -40,32 +41,23 @@ app.post('/api/admin/properties/add', async (req, res) => {
   }
 });
 
-// 3. Update Property (Status column removed)
+// 3. Update Property - Updated for schema requirements
 app.put('/api/admin/properties/:id', async (req, res) => {
-  const { title, price, location, guests, image_url, description } = req.body;
+  const { title, price, location_city, location_country, guests, image_url, description } = req.body;
   try {
     await pool.query(
-      `UPDATE properties SET title = $1, base_price_per_night = $2, location_city = $3, max_guests = $4, image_url = $5, description = $6 
-       WHERE property_id = $7`,
-      [title, price, location, guests, image_url, description, req.params.id]
+      `UPDATE properties SET title = $1, base_price_per_night = $2, location_city = $3, location_country = $4, max_guests = $5, image_url = $6, description = $7 
+       WHERE property_id = $8`,
+      [title, price, location_city, location_country, guests, image_url, description, req.params.id]
     );
     res.json({ success: true });
   } catch (error) {
+    console.error("Update Error:", error);
     res.status(500).json({ error: "Update failed." });
   }
 });
 
-// 4. Status Management (Note: These will fail if no status column exists in DB)
-// If you do not have a 'status' column in your database, please remove these two routes.
-app.post('/api/admin/properties/:id/approve', async (req, res) => {
-    res.status(400).json({ error: "Status column does not exist in database." });
-});
-
-app.post('/api/admin/properties/:id/reject', async (req, res) => {
-    res.status(400).json({ error: "Status column does not exist in database." });
-});
-
-// 5. Auth Login
+// 4. Auth Login
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   try {
