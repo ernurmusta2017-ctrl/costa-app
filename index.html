@@ -1017,26 +1017,33 @@
       }
     }
 
-    async function fetchProperties() {
-      if (!activeApiUrl) {
+  async function fetchProperties() {
+    if (!activeApiUrl) {
         return;
-      }
+    }
 
-      try {
-        const response = await fetch(`${activeApiUrl}/api/properties`);
+    try {
+        // Use the admin endpoint that returns the status column
+        const response = await fetch(`${activeApiUrl}/api/admin/properties`);
         const data = await response.json();
 
-        if (data.success && data.properties && data.properties.length > 0) {
-          fetchedPropertiesList = data.properties;
-          renderPropertiesGrid(fetchedPropertiesList);
+        // 1. Filter only for 'approved' villas
+        // 2. Fallback to empty array if properties doesn't exist
+        const approvedProperties = (data.properties || []).filter(p => p.status === 'approved');
+
+        if (approvedProperties.length > 0) {
+            fetchedPropertiesList = approvedProperties;
+            renderPropertiesGrid(fetchedPropertiesList);
         } else {
-          fetchedPropertiesList = [];
-          renderPropertiesGrid(mockVillas);
+            // If no approved villas, show mocks or empty state
+            fetchedPropertiesList = [];
+            renderPropertiesGrid(mockVillas);
         }
-      } catch (err) {
+    } catch (err) {
+        console.error("Fetch error:", err);
         renderPropertiesGrid(mockVillas);
-      }
     }
+}
 
     function renderPropertiesGrid(properties) {
       const grid = document.getElementById('propertiesGrid');
