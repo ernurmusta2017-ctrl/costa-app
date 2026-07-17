@@ -1,0 +1,36 @@
+<script>
+    const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
+
+    async function publish() {
+        const data = {
+            title: document.getElementById('title').value,
+            price: parseFloat(document.getElementById('price').value) || 0,
+            host_id: parseInt(localStorage.getItem('host_id')) || 777,
+            // Split "City, Country" from your input field
+            location_city: document.getElementById('location').value.split(',')[0].trim(),
+            location_country: document.getElementById('location').value.split(',')[1]?.trim() || 'Albania',
+            guests: parseInt(document.getElementById('guests').value) || 1,
+            image_url: document.getElementById('imageUrl').value,
+            description: document.getElementById('desc').value
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/properties/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText);
+            }
+            
+            alert("Villa published successfully!");
+            window.location.reload();
+        } catch (err) {
+            console.error("Fetch error details:", err);
+            alert("Publishing failed. Check the console for details.");
+        }
+    }
+</script>
