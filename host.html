@@ -1,36 +1,62 @@
-<script>
-    const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Coast | Host Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-slate-800 font-sans">
+    <div class="container mx-auto p-6 md:p-12">
+        <div class="glass p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6">Publish New Villa</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input id="title" placeholder="Villa Name" class="border-b-2 border-slate-300 p-2 outline-none">
+                <input id="price" placeholder="Price (€)" type="number" class="border-b-2 border-slate-300 p-2 outline-none">
+                <input id="location" placeholder="City, Albania" class="border-b-2 border-slate-300 p-2 outline-none">
+                <input id="guests" placeholder="Max Guests" type="number" class="border-b-2 border-slate-300 p-2 outline-none">
+                <input id="imageUrl" placeholder="Image URL" class="col-span-2 border-b-2 border-slate-300 p-2 outline-none">
+                <textarea id="desc" placeholder="Villa Description" class="col-span-2 border border-slate-300 rounded-lg p-4 h-32"></textarea>
+                <button id="pubBtn" onclick="publish()" class="col-span-2 bg-amber-600 text-white py-4 rounded-xl font-bold hover:bg-amber-700">PUBLISH VILLA</button>
+            </div>
+        </div>
+    </div>
 
-    async function publish() {
-        const data = {
-            title: document.getElementById('title').value,
-            price: parseFloat(document.getElementById('price').value) || 0,
-            host_id: parseInt(localStorage.getItem('host_id')) || 777,
-            // Split "City, Country" from your input field
-            location_city: document.getElementById('location').value.split(',')[0].trim(),
-            location_country: document.getElementById('location').value.split(',')[1]?.trim() || 'Albania',
-            guests: parseInt(document.getElementById('guests').value) || 1,
-            image_url: document.getElementById('imageUrl').value,
-            description: document.getElementById('desc').value
-        };
+    <script>
+        const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
 
-        try {
-            const res = await fetch(`${API_BASE}/api/admin/properties/add`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+        async function publish() {
+            const locInput = document.getElementById('location').value;
+            const data = {
+                title: document.getElementById('title').value,
+                price: parseFloat(document.getElementById('price').value) || 0,
+                host_id: parseInt(localStorage.getItem('host_id')) || 777,
+                location_city: locInput.split(',')[0]?.trim() || 'Unknown',
+                location_country: locInput.split(',')[1]?.trim() || 'Albania',
+                guests: parseInt(document.getElementById('guests').value) || 1,
+                image_url: document.getElementById('imageUrl').value,
+                description: document.getElementById('desc').value
+            };
 
-            if (!res.ok) {
-                const errorText = await res.text();
-                throw new Error(errorText);
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/properties/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) throw new Error(await res.text());
+                
+                alert("Villa published successfully!");
+                window.location.reload();
+            } catch (err) {
+                console.error("Fetch error details:", err);
+                alert("Publishing failed. Check the console for details.");
             }
-            
-            alert("Villa published successfully!");
-            window.location.reload();
-        } catch (err) {
-            console.error("Fetch error details:", err);
-            alert("Publishing failed. Check the console for details.");
         }
-    }
-</script>
+    </script>
+</body>
+</html>

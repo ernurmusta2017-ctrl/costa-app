@@ -22,13 +22,13 @@ app.get('/api/admin/properties', async (req, res) => {
   }
 });
 
-// 2. Add Property - UPDATED with location_country
+// 2. Add Property (Includes status default to 'pending')
 app.post('/api/admin/properties/add', async (req, res) => {
   const { title, price, host_id, location_city, location_country, guests, image_url, description } = req.body;
   try {
     const query = `
-      INSERT INTO properties (title, base_price_per_night, host_id, location_city, location_country, max_guests, image_url, description) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+      INSERT INTO properties (title, base_price_per_night, host_id, location_city, location_country, max_guests, image_url, description, status) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending') 
       RETURNING *`;
     const values = [title, price, host_id, location_city, location_country, guests, image_url, description];
     
@@ -40,7 +40,7 @@ app.post('/api/admin/properties/add', async (req, res) => {
   }
 });
 
-// 3. Update Property - UPDATED with location_country
+// 3. Update Property Details
 app.put('/api/admin/properties/:id', async (req, res) => {
   const { title, price, location_city, location_country, guests, image_url, description } = req.body;
   try {
@@ -56,7 +56,21 @@ app.put('/api/admin/properties/:id', async (req, res) => {
   }
 });
 
-// 4. Auth Login
+// 4. NEW: Approve or Reject Property
+app.post('/api/admin/properties/:id/:action', async (req, res) => {
+  const { id, action } = req.params;
+  const status = action === 'approve' ? 'approved' : 'rejected';
+  
+  try {
+    await pool.query("UPDATE properties SET status = $1 WHERE property_id = $2", [status, id]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Status Update Error:", error);
+    res.status(500).json({ error: "Failed to update status." });
+  }
+});
+
+// 5. Auth Login
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   try {
