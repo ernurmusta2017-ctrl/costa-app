@@ -12,6 +12,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
+// 1. Fetch all properties
 app.get('/api/admin/properties', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM properties ORDER BY property_id DESC');
@@ -21,6 +22,7 @@ app.get('/api/admin/properties', async (req, res) => {
   }
 });
 
+// 2. Add Property
 app.post('/api/admin/properties/add', async (req, res) => {
   const { title, price, host_id, location_city, location_country, guests, image_url, description } = req.body;
   try {
@@ -32,6 +34,7 @@ app.post('/api/admin/properties/add', async (req, res) => {
   }
 });
 
+// 3. Approve or Reject Property
 app.post('/api/admin/properties/:id/:action', async (req, res) => {
   const { id, action } = req.params;
   const status = action === 'approve' ? 'approved' : 'rejected';
@@ -43,16 +46,25 @@ app.post('/api/admin/properties/:id/:action', async (req, res) => {
   }
 });
 
-// NEW: Calendar Booking Endpoint
+// 4. Calendar Booking Endpoint (Updated to match your table schema)
 app.get('/api/bookings', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, title, start_date AS start, end_date AS end FROM bookings');
+    const query = `
+      SELECT 
+        booking_id AS id, 
+        'Booking #' || booking_id AS title, 
+        check_in_date AS start, 
+        check_out_date AS end 
+      FROM bookings`;
+    const result = await pool.query(query);
     res.json(result.rows);
   } catch (error) {
+    console.error("Calendar Fetch Error:", error);
     res.status(500).json({ error: "Failed to fetch bookings." });
   }
 });
 
+// 5. Auth Login
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   try {
