@@ -22,9 +22,8 @@ app.get('/api/admin/properties', async (req, res) => {
   }
 });
 
-// 2. Add Property - Updated for schema requirements
+// 2. Add Property - UPDATED with location_country
 app.post('/api/admin/properties/add', async (req, res) => {
-  // Added location_country to match required schema fields
   const { title, price, host_id, location_city, location_country, guests, image_url, description } = req.body;
   try {
     const query = `
@@ -41,7 +40,7 @@ app.post('/api/admin/properties/add', async (req, res) => {
   }
 });
 
-// 3. Update Property - Updated for schema requirements
+// 3. Update Property - UPDATED with location_country
 app.put('/api/admin/properties/:id', async (req, res) => {
   const { title, price, location_city, location_country, guests, image_url, description } = req.body;
   try {
