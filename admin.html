@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <title>COAST | Admin Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FullCalendar CSS - Updated to 6.1.15 -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css' rel='stylesheet' />
     <style>.tab-content { display: none; } .tab-active { display: block; }</style>
 </head>
 <body class="bg-slate-50 min-h-screen flex">
     <aside class="w-64 bg-slate-900 text-white p-6">
         <h1 class="text-2xl font-bold text-amber-500 mb-8">COAST</h1>
-        <button onclick="switchView('host')" class="block w-full p-2 hover:bg-slate-800">Host Portal</button>
-        <button onclick="switchView('admin')" class="block w-full p-2 hover:bg-slate-800">Admin Console</button>
+        <button onclick="switchView('host')" class="block w-full p-2 hover:bg-slate-800 text-left">Host Portal</button>
+        <button onclick="switchView('admin')" class="block w-full p-2 hover:bg-slate-800 text-left">Admin Console</button>
+        <button onclick="switchView('calendar')" class="block w-full p-2 hover:bg-slate-800 text-left">Bookings Calendar</button>
     </aside>
 
     <main class="flex-1 p-8">
@@ -18,15 +21,34 @@
             <h2 class="text-2xl font-bold mb-6">My Villas</h2>
             <div id="hostGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </div>
+        
         <div id="view-admin" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Admin Console</h2>
             <div id="adminGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </div>
+
+        <div id="view-calendar" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6">Bookings Calendar</h2>
+            <div id="calendar" class="bg-white p-4 rounded shadow-sm border"></div>
+        </div>
     </main>
 
+    <!-- FullCalendar JS - Updated to 6.1.15 -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <script>
         const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
         const hostId = localStorage.getItem('host_id');
+
+        // Initialize Calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: `${API_BASE}/api/bookings`,
+                eventColor: '#D4AF37'
+            });
+            calendar.render();
+        });
 
         async function fetchProperties() {
             const res = await fetch(`${API_BASE}/api/admin/properties`);
