@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>COAST | Admin Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FullCalendar CSS - Updated to 6.1.15 -->
+    <!-- FullCalendar Official Bundle CSS -->
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css' rel='stylesheet' />
     <style>.tab-content { display: none; } .tab-active { display: block; }</style>
 </head>
@@ -33,7 +33,7 @@
         </div>
     </main>
 
-    <!-- FullCalendar JS - Updated to 6.1.15 -->
+    <!-- FullCalendar Official Bundle JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <script>
         const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
@@ -51,9 +51,13 @@
         });
 
         async function fetchProperties() {
-            const res = await fetch(`${API_BASE}/api/admin/properties`);
-            const data = await res.json();
-            render(data.properties || []);
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/properties`);
+                const data = await res.json();
+                render(data.properties || []);
+            } catch (err) {
+                console.error("Fetch error:", err);
+            }
         }
 
         async function updateStatus(id, action) {
