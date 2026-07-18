@@ -44,7 +44,17 @@
             const calendarEl = document.getElementById('calendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                events: `${API_BASE}/api/bookings`,
+                events: {
+                    url: `${API_BASE}/api/bookings`,
+                    success: function(content) {
+                        return content.map(b => ({
+                            id: b.booking_id,
+                            title: `Booking #${b.booking_id}`,
+                            start: b.check_in_date,
+                            end: b.check_out_date
+                        }));
+                    }
+                },
                 eventColor: '#D4AF37'
             });
             calendar.render();
