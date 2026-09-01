@@ -1,105 +1,101 @@
+<!-- admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>COAST | Admin Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coast Luxury Villas - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FullCalendar Official Bundle CSS -->
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css' rel='stylesheet' />
-    <style>.tab-content { display: none; } .tab-active { display: block; }</style>
 </head>
-<body class="bg-slate-50 min-h-screen flex">
-    <aside class="w-64 bg-slate-900 text-white p-6">
-        <h1 class="text-2xl font-bold text-amber-500 mb-8">COAST</h1>
-        <button onclick="switchView('host')" class="block w-full p-2 hover:bg-slate-800 text-left">Host Portal</button>
-        <button onclick="switchView('admin')" class="block w-full p-2 hover:bg-slate-800 text-left">Admin Console</button>
-        <button onclick="switchView('calendar')" class="block w-full p-2 hover:bg-slate-800 text-left">Bookings Calendar</button>
-    </aside>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+    <header class="bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center">
+        <h1 class="text-xl font-semibold tracking-wider text-amber-400">COAST LUXURY VILLAS // ADMIN</h1>
+        <button onclick="logout()" class="text-sm bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1 rounded hover:bg-red-600/30">Logout</button>
+    </header>
 
-    <main class="flex-1 p-8">
-        <div id="view-host" class="tab-content tab-active">
-            <h2 class="text-2xl font-bold mb-6">My Villas</h2>
-            <div id="hostGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-        </div>
-        
-        <div id="view-admin" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6">Admin Console</h2>
-            <div id="adminGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    <main class="max-w-7xl mx-auto p-6 space-y-8">
+        <!-- Overview Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl">
+                <p class="text-sm text-slate-400">Total Properties</p>
+                <h3 id="stat-properties" class="text-3xl font-bold mt-2 text-amber-400">-</h3>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl">
+                <p class="text-sm text-slate-400">Active Bookings</p>
+                <h3 id="stat-bookings" class="text-3xl font-bold mt-2 text-amber-400">-</h3>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl">
+                <p class="text-sm text-slate-400">Platform Revenue</p>
+                <h3 id="stat-revenue" class="text-3xl font-bold mt-2 text-amber-400">€0</h3>
+            </div>
         </div>
 
-        <div id="view-calendar" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6">Bookings Calendar</h2>
-            <div id="calendar" class="bg-white p-4 rounded shadow-sm border"></div>
-        </div>
+        <!-- Property Moderation Section -->
+        <section class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h2 class="text-lg font-medium mb-4 text-slate-200">Property Approvals</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
+                        <tr>
+                            <th class="p-3">Title</th>
+                            <th class="p-3">Location</th>
+                            <th class="p-3">Price / Night</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-properties-table" class="divide-y divide-slate-800">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
-    <!-- FullCalendar Official Bundle JS -->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <script>
-        const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
-        const hostId = localStorage.getItem('host_id');
+        const activeApiUrl = window.location.origin.includes('localhost') 
+            ? 'http://localhost:10000' 
+            : 'https://coast-luxury-villas-backend.onrender.com';
 
-        // Initialize Calendar
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events: {
-                    url: `${API_BASE}/api/bookings`,
-                    success: function(content) {
-                        return content.map(b => ({
-                            id: b.booking_id,
-                            title: `Booking #${b.booking_id}`,
-                            start: b.check_in_date,
-                            end: b.check_out_date
-                        }));
-                    }
-                },
-                eventColor: '#D4AF37'
-            });
-            calendar.render();
-        });
-
-        async function fetchProperties() {
+        async function loadAdminData() {
             try {
-                const res = await fetch(`${API_BASE}/api/admin/properties`);
-                const data = await res.json();
-                render(data.properties || []);
+                const res = await fetch(`${activeApiUrl}/api/admin/properties`);
+                const properties = await res.json();
+                
+                document.getElementById('stat-properties').textContent = properties.length;
+                
+                const tbody = document.getElementById('admin-properties-table');
+                tbody.innerHTML = properties.map(p => `
+                    <tr class="hover:bg-slate-800/50">
+                        <td class="p-3 font-medium text-white">${p.title}</td>
+                        <td class="p-3">${p.location_city}, ${p.location_country}</td>
+                        <td class="p-3">€${p.base_price_per_night}</td>
+                        <td class="p-3"><span class="px-2 py-1 text-xs rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">${p.status}</span></td>
+                        <td class="p-3 space-x-2">
+                            <button onclick="updateStatus('${p.id}', 'active')" class="text-emerald-400 hover:underline">Approve</button>
+                            <button onclick="updateStatus('${p.id}', 'rejected')" class="text-red-400 hover:underline">Reject</button>
+                        </td>
+                    </tr>
+                `).join('');
             } catch (err) {
-                console.error("Fetch error:", err);
+                console.error("Error loading admin data:", err);
             }
         }
 
-        async function updateStatus(id, action) {
-            await fetch(`${API_BASE}/api/admin/properties/${id}/${action}`, { method: 'POST' });
-            fetchProperties();
+        async function updateStatus(id, status) {
+            await fetch(`${activeApiUrl}/api/admin/properties/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, status })
+            });
+            loadAdminData();
         }
 
-        function switchView(view) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('tab-active'));
-            document.getElementById(`view-${view}`).classList.add('tab-active');
+        function logout() {
+            window.location.href = '/index.html';
         }
 
-        function render(props) {
-            document.getElementById('hostGrid').innerHTML = props
-                .filter(p => p.host_id == hostId)
-                .map(p => `
-                    <div class="bg-white p-4 rounded border shadow-sm">
-                        <h3 class="font-bold">${p.title}</h3>
-                        <p class="text-sm font-bold ${p.status === 'approved' ? 'text-green-600' : 'text-red-600'}">${p.status || 'pending'}</p>
-                    </div>`).join('');
-
-            document.getElementById('adminGrid').innerHTML = props.map(p => `
-                <div class="bg-white p-4 rounded border shadow-sm">
-                    <h3 class="font-bold">${p.title}</h3>
-                    <div class="flex gap-2 mt-2">
-                        <button onclick="updateStatus(${p.property_id}, 'approve')" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Approve</button>
-                        <button onclick="updateStatus(${p.property_id}, 'reject')" class="bg-red-600 text-white px-2 py-1 rounded text-xs">Reject</button>
-                    </div>
-                </div>`).join('');
-        }
-
-        fetchProperties();
+        loadAdminData();
     </script>
 </body>
 </html>
