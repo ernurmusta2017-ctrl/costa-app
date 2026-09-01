@@ -2,61 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Coast | Host Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coast Luxury Villas - Host Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-    </style>
 </head>
-<body class="gradient-bg min-h-screen text-slate-800 font-sans">
-    <div class="container mx-auto p-6 md:p-12">
-        <div class="glass p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
-            <h2 class="text-2xl font-bold mb-6">Publish New Villa</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <input id="title" placeholder="Villa Name" class="border-b-2 border-slate-300 p-2 outline-none">
-                <input id="price" placeholder="Price (€)" type="number" class="border-b-2 border-slate-300 p-2 outline-none">
-                <input id="location" placeholder="City, Albania" class="border-b-2 border-slate-300 p-2 outline-none">
-                <input id="guests" placeholder="Max Guests" type="number" class="border-b-2 border-slate-300 p-2 outline-none">
-                <input id="imageUrl" placeholder="Image URL" class="col-span-2 border-b-2 border-slate-300 p-2 outline-none">
-                <textarea id="desc" placeholder="Villa Description" class="col-span-2 border border-slate-300 rounded-lg p-4 h-32"></textarea>
-                <button id="pubBtn" onclick="publish()" class="col-span-2 bg-amber-600 text-white py-4 rounded-xl font-bold hover:bg-amber-700">PUBLISH VILLA</button>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+    <header class="bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center">
+        <h1 class="text-xl font-semibold tracking-wider text-amber-400">COAST LUXURY VILLAS // HOST PORTAL</h1>
+        <button onclick="logout()" class="text-sm bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1 rounded hover:bg-red-600/30">Logout</button>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Add Property Form -->
+        <section class="bg-slate-900 border border-slate-800 rounded-xl p-6 h-fit">
+            <h2 class="text-lg font-medium mb-4 text-slate-200">List New Villa</h2>
+            <form id="property-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Villa Title</label>
+                    <input type="text" name="title" required class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Price / Night (€)</label>
+                        <input type="number" name="price" required class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Max Guests</label>
+                        <input type="number" name="guests" required class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">City</label>
+                        <input type="text" name="location_city" value="Sarandë" required class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Country</label>
+                        <input type="text" name="location_country" value="Albania" required class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Image URL</label>
+                    <input type="url" name="image_url" placeholder="https://..." required class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Description</label>
+                    <textarea name="description" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-400"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-medium py-2 rounded transition">Submit for Review</button>
+            </form>
+        </section>
+
+        <!-- Host Properties & Bookings List -->
+        <section class="lg:col-span-2 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h2 class="text-lg font-medium mb-4 text-slate-200">Your Listed Properties</h2>
+                <div id="host-properties-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated via JS -->
+                </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
-        const API_BASE = 'https://coast-luxury-villas-backend.onrender.com';
+        const activeApiUrl = window.location.origin.includes('localhost') 
+            ? 'http://localhost:10000' 
+            : 'https://coast-luxury-villas-backend.onrender.com';
+            
+        const ownerId = localStorage.getItem('user_id') || '1';
 
-        async function publish() {
-            const locInput = document.getElementById('location').value;
-            const data = {
-                title: document.getElementById('title').value,
-                price: parseFloat(document.getElementById('price').value) || 0,
-                host_id: parseInt(localStorage.getItem('host_id')) || 777,
-                location_city: locInput.split(',')[0]?.trim() || 'Unknown',
-                location_country: locInput.split(',')[1]?.trim() || 'Albania',
-                guests: parseInt(document.getElementById('guests').value) || 1,
-                image_url: document.getElementById('imageUrl').value,
-                description: document.getElementById('desc').value
-            };
+        document.getElementById('property-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data.owner_id = ownerId;
 
+            const res = await fetch(`${activeApiUrl}/api/admin/properties/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                alert('Property submitted successfully!');
+                e.target.reset();
+                loadHostProperties();
+            }
+        });
+
+        async function loadHostProperties() {
             try {
-                const res = await fetch(`${API_BASE}/api/admin/properties/add`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (!res.ok) throw new Error(await res.text());
+                const res = await fetch(`${activeApiUrl}/api/owner/properties?owner_id=${ownerId}`);
+                const properties = await res.json();
                 
-                alert("Villa published successfully!");
-                window.location.reload();
+                const container = document.getElementById('host-properties-list');
+                container.innerHTML = properties.map(p => `
+                    <div class="border border-slate-800 bg-slate-950 rounded-lg p-4 space-y-2">
+                        <img src="${p.image_url}" alt="${p.title}" class="w-full h-32 object-cover rounded">
+                        <h3 class="font-medium text-white">${p.title}</h3>
+                        <p class="text-xs text-slate-400">${p.location_city}, ${p.location_country}</p>
+                        <div class="flex justify-between items-center text-sm pt-2">
+                            <span class="text-amber-400 font-semibold">€${p.base_price_per_night} / night</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">${p.status}</span>
+                        </div>
+                    </div>
+                `).join('');
             } catch (err) {
-                console.error("Fetch error details:", err);
-                alert("Publishing failed. Check the console for details.");
+                console.error("Error loading properties:", err);
             }
         }
+
+        function logout() {
+            localStorage.removeItem('user_id');
+            window.location.href = '/index.html';
+        }
+
+        loadHostProperties();
     </script>
 </body>
 </html>
