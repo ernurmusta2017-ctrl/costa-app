@@ -2,6 +2,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const path = require('path');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const app = express();
@@ -16,10 +17,14 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// --- Page Routes ---
-
-app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'index.html'));
+// --- Root Health Check (Required for frontend DB Control Center handshake) ---
+app.get('/', async (req, res) => {
+    try {
+        await pool.query('SELECT 1');
+        res.json({ status: "online", database: "connected" });
+    } catch (error) {
+        res.json({ status: "online", database: "disconnected" });
+    }
 });
 
 app.get('/admin', (req, res) => {
@@ -99,22 +104,108 @@ app.get('/api/bookings', async (req, res) => {
     }
 });
 
-// 6. Auth Login (Updated to include is_admin)
+// 6. Auth Login
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const result = await pool.query(
-            "SELECT user_id, is_host, is_admin FROM users WHERE email = $1 AND password_hash = $2", 
-            [email, password]
+            "SELECT user_id, email, password_hash, is_host, is_admin FROM users WHERE email = $1", 
+            [email]
         );
-        if (result.rows.length > 0) {
-            res.json({ success: true, user: result.rows[0] });
-        } else {
-            res.status(401).json({ success: false, message: "Invalid credentials." });
+        
+        if (result.rows.length === 0) {
+            return res.status(401).json({ success: false, message: "Invalid credentials." });
         }
+
+        const user = result.rows[0];
+        
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: "Invalid credentials." });
+        }
+
+        res.json({ 
+            success: true, 
+            user: { 
+                user_id: user.user_id, 
+                email: user.email, 
+                is_host: user.is_host, 
+                is_admin: user.is_admin 
+            } 
+        });
     } catch (error) {
         console.error("Login Error:", error.message);
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 7. Auth Register (Host Signup)
+app.post('/api/auth/register', async (req, res) => {
+    const { name, email, password } = req.body;
+    try {
+        const existing = await pool.query("SELECT user_id FROM users WHERE email = $1", [email]);
+        if (existing.rows.length > 0) {
+            return res.status(400).json({ success: false, message: "Email is already registered." });
+        }
+
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(password, saltRounds);
+
+        const query = `
+            INSERT INTO users (email, password_hash, is_host, is_admin) 
+            VALUES ($1, $2, true, false) 
+            RETURNING user_id, email, is_host, is_admin
+        `;
+        const result = await pool.query(query, [email, password_hash]);
+
+        res.status(201).json({ 
+            success: true, 
+            message: "Account created successfully", 
+            user: result.rows[0] 
+        });
+    } catch (error) {
+        console.error("Registration Error:", error.message);
+        res.status(500).json({ success: false, error: "Database insertion failed during registration." });
+    }
+});
+
+// 8. General User Registration Endpoint
+app.post('/api/admin/users', async (req, res) => {
+    const { firstName, lastName, email, phone, isHost, password } = req.body;
+
+    try {
+        const existing = await pool.query("SELECT user_id FROM users WHERE email = $1", [email]);
+        if (existing.rows.length > 0) {
+            return res.status(400).json({ success: false, message: "Email is already registered." });
+        }
+
+        const rawPassword = password || Math.random().toString(36).slice(-8);
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(rawPassword, saltRounds);
+
+        const query = `
+            INSERT INTO users (first_name, last_name, email, phone, password_hash, is_host, is_admin) 
+            VALUES ($1, $2, $3, $4, $5, $6, false) 
+            RETURNING user_id, first_name, last_name, email, phone, is_host
+        `;
+        
+        const result = await pool.query(query, [
+            firstName || '', 
+            lastName || '', 
+            email, 
+            phone || '', 
+            password_hash, 
+            Boolean(isHost)
+        ]);
+
+        res.status(201).json({
+            success: true,
+            message: 'User registered successfully',
+            user: result.rows[0]
+        });
+    } catch (error) {
+        console.error("Database User Registration Error:", error.message);
+        res.status(500).json({ success: false, message: 'Database error during registration.' });
     }
 });
 
