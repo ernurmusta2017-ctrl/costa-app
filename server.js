@@ -99,16 +99,22 @@ app.get('/api/bookings', async (req, res) => {
     }
 });
 
-// 6. Auth Login
+// 6. Auth Login (Updated to include is_admin)
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const result = await pool.query("SELECT user_id, is_host FROM users WHERE email = $1 AND password_hash = $2", [email, password]);
-        if (result.rows.length > 0) res.json({ success: true, user: result.rows[0] });
-        else res.status(401).json({ success: false, message: "Invalid credentials." });
+        const result = await pool.query(
+            "SELECT user_id, is_host, is_admin FROM users WHERE email = $1 AND password_hash = $2", 
+            [email, password]
+        );
+        if (result.rows.length > 0) {
+            res.json({ success: true, user: result.rows[0] });
+        } else {
+            res.status(401).json({ success: false, message: "Invalid credentials." });
+        }
     } catch (error) {
         console.error("Login Error:", error.message);
-        res.status(500).json({ success: false, error: "Database error." });
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
