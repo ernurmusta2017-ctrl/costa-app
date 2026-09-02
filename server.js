@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const app = express();
+app.disable('etag'); // Prevent 304 empty body responses for frontend diagnostics
 app.use(express.json());
 app.use(cors());
 
