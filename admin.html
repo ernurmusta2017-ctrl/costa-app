@@ -72,8 +72,8 @@
                         <td class="p-3">€${p.base_price_per_night}</td>
                         <td class="p-3"><span class="px-2 py-1 text-xs rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">${p.status}</span></td>
                         <td class="p-3 space-x-2">
-                            <button onclick="updateStatus('${p.id}', 'active')" class="text-emerald-400 hover:underline">Approve</button>
-                            <button onclick="updateStatus('${p.id}', 'rejected')" class="text-red-400 hover:underline">Reject</button>
+                            <button onclick="updateStatus('${p.property_id}', 'approve')" class="text-emerald-400 hover:underline">Approve</button>
+                            <button onclick="updateStatus('${p.property_id}', 'rejected')" class="text-red-400 hover:underline">Reject</button>
                         </td>
                     </tr>
                 `).join('');
@@ -82,11 +82,10 @@
             }
         }
 
-        async function updateStatus(id, status) {
-            await fetch(`${activeApiUrl}/api/admin/properties/status`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, status })
+        async function updateStatus(id, action) {
+            await fetch(`${activeApiUrl}/api/admin/properties/${id}/${action}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
             });
             loadAdminData();
         }
