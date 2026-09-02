@@ -21,11 +21,12 @@ const pool = new Pool({
 });
 
 // --- Root Health Check (Required for frontend DB Control Center handshake) ---
-app.get('/', async (req, res) => {
+app.all('/', async (req, res) => {
     try {
         await pool.query('SELECT 1');
         res.json({ status: "online", database: "connected" });
     } catch (error) {
+        console.error("Health Check DB Error:", error.message);
         res.json({ status: "online", database: "disconnected" });
     }
 });
