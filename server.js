@@ -8,7 +8,11 @@ require('dotenv').config();
 const app = express();
 app.disable('etag'); // Prevent 304 empty body responses for frontend diagnostics
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Serve static files from the root directory so admin.html and host.html load cleanly
 app.use(express.static(__dirname));
