@@ -155,9 +155,9 @@ app.post('/api/auth/register', async (req, res) => {
         const password_hash = await bcrypt.hash(password, saltRounds);
 
         const query = `
-            INSERT INTO users (email, password_hash, is_host, is_admin) 
-            VALUES ($1, $2, true, false) 
-            RETURNING user_id, email, is_host, is_admin
+            INSERT INTO users (id, email, password_hash, is_host, is_admin) 
+            VALUES (gen_random_uuid(), $1, $2, true, false) 
+            RETURNING user_id, id, email, is_host, is_admin
         `;
         const result = await pool.query(query, [email, password_hash]);
 
@@ -187,9 +187,9 @@ app.post('/api/admin/users', async (req, res) => {
         const password_hash = await bcrypt.hash(rawPassword, saltRounds);
 
         const query = `
-            INSERT INTO users (first_name, last_name, email, phone_number, password_hash, is_host, is_admin) 
-            VALUES ($1, $2, $3, $4, $5, $6, false) 
-            RETURNING user_id, first_name, last_name, email, phone_number AS phone, is_host
+            INSERT INTO users (id, first_name, last_name, email, phone_number, password_hash, is_host, is_admin) 
+            VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, false) 
+            RETURNING user_id, id, first_name, last_name, email, phone_number AS phone, is_host
         `;
         
         const result = await pool.query(query, [
