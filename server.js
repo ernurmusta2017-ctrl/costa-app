@@ -22,7 +22,8 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false },
     max: 10,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000,
+    family: 4 // Forces IPv4 to bypass Codespaces network routing limitations
 });
 
 // --- Root Health Check (Non-blocking for instant Netlify handshake) ---
