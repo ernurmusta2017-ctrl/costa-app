@@ -187,9 +187,9 @@ app.post('/api/admin/users', async (req, res) => {
         const password_hash = await bcrypt.hash(rawPassword, saltRounds);
 
         const query = `
-            INSERT INTO users (first_name, last_name, email, phone, password_hash, is_host, is_admin) 
+            INSERT INTO users (first_name, last_name, email, phone_number, password_hash, is_host, is_admin) 
             VALUES ($1, $2, $3, $4, $5, $6, false) 
-            RETURNING user_id, first_name, last_name, email, phone, is_host
+            RETURNING user_id, first_name, last_name, email, phone_number AS phone, is_host
         `;
         
         const result = await pool.query(query, [
